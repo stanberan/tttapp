@@ -39,7 +39,7 @@ public class Capability {
 	public void setConsumerLogo(String consumerLogo) {
 		this.consumerLogo = consumerLogo;
 	}
-
+//commit to remote
 	String consumer;
 	String consumerURL;
 	String consumes;
