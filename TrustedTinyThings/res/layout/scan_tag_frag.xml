@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/scan_a_tag"
+    android:orientation="vertical"
+  >
+ 
+            <com.example.trustedtinythings.StyledTextView
+                android:id="@+id/scan_a_tag_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="@string/scan"
+                android:textColor="@color/Ivory"
+                android:textSize="20sp" />
+          
+            <ImageView 
+        android:id="@+id/scan_a_tag_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/scan_a_tag_view"
+        android:background="@drawable/logo_white"
+        />
+
+    </RelativeLayout>

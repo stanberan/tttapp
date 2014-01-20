@@ -1,7 +1,6 @@
 package com.example.trustedtinythings;
 
 
-import net.londatiga.android.QuickAction;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -19,6 +18,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
@@ -36,11 +36,7 @@ static InformationHolder holder=null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if(!NfcAdapter.getDefaultAdapter(this).isEnabled()){
-			Toast.makeText(getApplicationContext(), "Please Enable NFC before using this app" , Toast.LENGTH_LONG).show();
-			finish();
-		}
-		
+	
 		setContentView(R.layout.activity_main);
 		responseText=(TextView)findViewById(R.id.responseText);
 		infoText=(TextView)findViewById(R.id.infoText);
@@ -49,7 +45,7 @@ static InformationHolder holder=null;
 		ownerLogo=(ImageView)findViewById(R.id.ownerlogo);
 		consumerLogo=(ImageView)findViewById(R.id.consumerlogo);
 		
-		final QuickAction action=new QuickAction(this);
+	
 		infoText.setClickable(true);
 		infoText.setOnClickListener(new View.OnClickListener() {
 			
