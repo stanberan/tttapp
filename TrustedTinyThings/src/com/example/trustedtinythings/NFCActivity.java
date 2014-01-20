@@ -54,6 +54,7 @@ public class NFCActivity extends FragmentActivity {
 
 	public void onResume() {
 		super.onResume();
+		scan.setInfo(info);
 	}
 
 	@SuppressLint("NewApi")

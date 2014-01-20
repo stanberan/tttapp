@@ -10,11 +10,11 @@ import android.widget.TextView;
 
 public class ScanATagFragment extends Fragment{
 	
-	private static TextView scan_a_tag=null;
+	private static StyledTextView scan_a_tag=null;
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 			View result=inflater.inflate(R.layout.scan_tag_frag,container,false);		
-			scan_a_tag=(TextView)result.findViewById(R.id.scan_a_tag_view);	
+			scan_a_tag=(StyledTextView)result.findViewById(R.id.info_view);	
 			return result;
 			
 }
