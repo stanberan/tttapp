@@ -18,11 +18,11 @@
           
             <ImageView 
         android:id="@+id/scan_a_tag_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_centerHorizontal="true"
         android:layout_above="@id/scan_a_tag_view"
-        android:background="@drawable/logo_white"
+        android:background="@drawable/logo_blue"
         />
-
+	<include layout="@layout/acceptcancel_view"/>
     </RelativeLayout>

@@ -24,14 +24,14 @@ public class NFCActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+/*
 		if (!NfcAdapter.getDefaultAdapter(this).isEnabled()) {
 			Toast.makeText(getApplicationContext(),
 					"Please Enable NFC before using this app",
 					Toast.LENGTH_LONG).show();
 			finish();
 		}
-
+*/
 		if (getSupportFragmentManager().findFragmentById(android.R.id.content) == null) {
 			scan = new ScanATagFragment();
 			first=true;
@@ -84,11 +84,11 @@ public class NFCActivity extends FragmentActivity {
 						byte[] nestedPayload = nestedMessage.getRecords()[0]
 								.getPayload();
 						for (int s = 1; s < nestedPayload.length; s++) {
-							urltemp += (char) payloadurl[s];
+							urltemp += (char) nestedPayload[s];
 						}
 					} catch (FormatException e) {
 						Toast.makeText(getApplicationContext(),
-								"It seems this is not nested",
+								"No wrapper around NDEF Tag!",
 								Toast.LENGTH_LONG).show();
 					}
 
