@@ -54,6 +54,7 @@ public class NFCActivity extends FragmentActivity {
 
 	public void onResume() {
 		super.onResume();
+		scan.setInfo(info);
 	}
 
 	@SuppressLint("NewApi")
@@ -78,7 +79,7 @@ public class NFCActivity extends FragmentActivity {
 				String type = new String(ndefrecord.getType());
 				byte[] payloadurl = ndefMessage.getRecords()[0].getPayload();
 				String urltemp = "http://";
-				if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+			//	if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN) {
 					try {
 						NdefMessage nestedMessage = new NdefMessage(payloadurl);
 						byte[] nestedPayload = nestedMessage.getRecords()[0]
@@ -92,7 +93,7 @@ public class NFCActivity extends FragmentActivity {
 								Toast.LENGTH_LONG).show();
 					}
 
-				}
+				//}
 
 				String u = ndefrecord.toUri().toString();
 				if (u.contains("deps.at")) {
@@ -101,7 +102,7 @@ public class NFCActivity extends FragmentActivity {
 					MD5 = Helpers.getMD5(rawMessage, idTag);
 
 				}
-				info = "URI JELY:" + u + "\nURI From " + urltemp + "Size:"
+				info = "URI JELY:" + u + "\nURI From POSTER " + urltemp + "Size:"
 						+ ndefMessage.getRecords().length + "\nTYPE:" + type;
 				MD5 = Helpers.getMD5(rawMessage, idTag);
 

@@ -2,6 +2,9 @@ package com.example.trustedtinythings;
 
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -11,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.example.trustedtinythings.OverviewListAdapter.GenericRow;
 import com.squareup.picasso.Picasso;
 
 import android.nfc.NfcAdapter;
@@ -22,6 +26,8 @@ import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,23 +38,29 @@ TextView responseText;
 ImageView manufacturerLogo;
 ImageView ownerLogo;
 ImageView consumerLogo;
+
+//NEW API
+ImageView deviceImage;
+StyledTextView deviceDescription;
+ListView capabilityQualityList;
+StyledButton accept;
+StyledButton cancel;
+LinearLayout externalBodies;
+LinearLayout collectedData;
+
 static InformationHolder holder=null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.overview_frag);
 		responseText=(TextView)findViewById(R.id.responseText);
-		infoText=(TextView)findViewById(R.id.infoText);
-		
+		infoText=(TextView)findViewById(R.id.infoText);		
 		manufacturerLogo=(ImageView)findViewById(R.id.manufacturerlogo);
 		ownerLogo=(ImageView)findViewById(R.id.ownerlogo);
 		consumerLogo=(ImageView)findViewById(R.id.consumerlogo);
-		
-	
-		infoText.setClickable(true);
-		infoText.setOnClickListener(new View.OnClickListener() {
-			
+//		infoText.setClickable(true);
+	/*	infoText.setOnClickListener(new View.OnClickListener() {			
 			@Override
 			public void onClick(View v) {
 				Toast.makeText(MainActivity.this, "Clicked", Toast.LENGTH_LONG).show();
@@ -59,34 +71,48 @@ static InformationHolder holder=null;
 			}
 		});
 		
+		*/
+		
+		//NEW 
+		
+		deviceImage=(ImageView)findViewById(R.id.device_image_view);
+		deviceDescription=(StyledTextView)findViewById(R.id.device_description_view);
+		capabilityQualityList=(ListView)findViewById(R.id.capability_quality_list_view);
+		externalBodies=(LinearLayout)findViewById(R.id.external_bodies_view);
+		collectedData=(LinearLayout)findViewById(R.id.data_collected_view);
+		
+		new ServerResponse().execute(new String[]{"MD5Hash"});
 		
 		
-		Intent i=getIntent();
-		String id=i.getStringExtra("id");	
-		
-		
-		if(id==null){
-			getDeviceInfo("MD5Hash");
-		}
-		else{
-		getDeviceInfo(id);
-		}
-		infoText.setText("Show me the frickin companies who are behind this device :P");
 	}
+		
+		
+	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.nfc, menu);
 		return true;
 	}
 	
-	
+	private void populateView(InformationHolder hol){
+		ArrayList<GenericRow> ada=new ArrayList<GenericRow>(Arrays.asList(hol.capabilities));
+		ArrayList<GenericRow> qual=new ArrayList<GenericRow>(Arrays.asList(hol.qualities));
+		ada.addAll(qual);
+		capabilityQualityList.setScrollContainer(false);
+		capabilityQualityList.setAdapter(new OverviewListAdapter(this,R.layout.capability_row,ada));
+		
+		
+		
+	}
+				
 	public void setHolder(String response){
+		
 		if(response==null){
-			infoText.setText("This device was not recognized in our system.\nScan another tag.");
+		//	infoText.setText("This device was not recognized in our system.\nScan another tag.");
 				//TO DO -- REGISTER DEVICE BUTTON. - need deviceID and phoneID
-			return;
+			
 		}
 		else{
 		holder =new InformationHolder();
@@ -106,12 +132,13 @@ static InformationHolder holder=null;
 			holder.ownerLogo=root.getString("ownerLogo");
 			holder.manufacturerLogo=root.getString("manufacturerLogo");
 			
-			responseText.setText(holder.toString());
-			
+		//	responseText.setText(holder.toString());
+		
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
-			infoText.setText("JSON ERROR in setholder() method");
+		//	infoText.setText("JSON ERROR in setholder() method");
 			e.printStackTrace();
+		
 		}
 		}
 		
@@ -162,67 +189,16 @@ public Capability[] getCapabilities(JSONArray capabilities){
     	
     	
     }
-	
 
-	
-	
-	
-	public void getDeviceInfo(String id){
-    	try{
-    	new ServerResponse().execute(new String[]{id});
-			 /*
-			 if(200!=response.getStatusLine().getStatusCode()){
-    			
-    		//	info.setText("This device was not recognized in our system.");
-    		//	acceptContinue.setClickable(false);
-    		//	registerButton.setVisibility(View.VISIBLE);
-    			return;
-    		}
-    		
-    		if(entity!=null){
-    		//	acceptContinue.setText("Accept & Continue");
-    			InputStream instream= entity.getContent();
-    			String result= Helpers.convertInputToString(instream);
-    			Log.e("JSON", result);
-    		//	json.setText(result);
-    			JSONObject json= new JSONObject(result);
-    			JSONArray capabilities=json.getJSONArray("capabilities");
-    			JSONArray features =json.getJSONArray("features");
-    			Log.e("Features:",features.toString(2));
-    			Log.e("Capabilities:",capabilities.toString(2));
-    			
-    			String picture =json.getString("picture");
-    			String infoString="Device Type: "+json.getString("deviceType")+"\n"+
-    			"Owner:"+json.getString("owner")+"\n"+
-    			"Manufacturer: "+json.getString("manufacturer");
-    			//info.setText(infoString);
-    		//	description.setText(json.getString("deviceDescription")); 
-    			
-    		//	CapabilityAdapter capAdapter=new CapabilityAdapter(this,getCapabilities(capabilities));
-    		//	capabilityList.setAdapter(capAdapter);
-    			
-    		//	QualityAdapter qualAdapter=new QualityAdapter(this,getQualities(features));
-    		//	qualityList.setAdapter(qualAdapter);
-    			Log.e("Bus Image URL", picture);
-    		//	loadImage(picture);
-    		//	instream.close();
-    			
-    		
-    			
-    		}
-    		else{
-    	//		json.setText("ID not Found. Try Again!");
-    		}
-    		*/
-    	}
-    		catch(Exception e){
-    			e.printStackTrace();
-    		}
-    		
-    	}
 	
 	private class ServerResponse extends AsyncTask<String, String, String> {
 
+		
+		
+		
+		
+		
+		
         @Override
         protected String doInBackground(String... params) {
         	publishProgress("Creating Http Client...");
@@ -256,26 +232,19 @@ public Capability[] getCapabilities(JSONArray capabilities){
         @Override
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
-         infoText.setText(values[0]);
+        // infoText.setText(values[0]);
         }
 
         @Override
         protected void onPostExecute(String result) {
         	if(result!=null){
-        	responseText.setText(result);
+        //	responseText.setText(result);
         	}
         	setHolder(result);
-        	
-        	// Toast.makeText(getApplicationContext(),responseContent , Toast.LENGTH_LONG).show();
-        
-          //  TextView txt = (TextView) findViewById(R.id.output);
-          //  txt.setText("Executed"); // txt.setText(result);
-            // might want to change "executed" for the returned string passed
-            // into onPostExecute() but that is upto you
-        }
+        	populateView(holder);
 	
-	
-        	}
+}
+	}
 	
 	
 }

@@ -1,6 +1,6 @@
 package com.example.trustedtinythings;
 
-public class Capability {
+public class Capability implements OverviewListAdapter.GenericRow {
 
 	public String getConsumer() {
 		return consumer;
@@ -39,19 +39,43 @@ public class Capability {
 	public void setConsumerLogo(String consumerLogo) {
 		this.consumerLogo = consumerLogo;
 	}
-//commit to remote
+public String getCapabilityType() {
+		return capabilityType;
+	}
+	public void setCapabilityType(String capabilityType) {
+		this.capabilityType = capabilityType;
+	}
+	//commit to remote
 	String consumer;
 	String consumerURL;
 	String consumes;
 	String purpose;
 	String name;
 	String consumerLogo;
+	String capabilityType;
 	@Override
 	public String toString() {
 		return "Capability [consumer=" + consumer + ", consumerURL="
 				+ consumerURL + ", consumes=" + consumes + ", purpose="
 				+ purpose + ", name=" + name + "]";
 	}
+	@Override
+	public String getTitle() {
+		// TODO Auto-generated method stub
+		return capabilityType;
+	}
+	@Override
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return "This device is collecting your data";
+	}
+	@Override
+	public String getLetter() {
+		// TODO Auto-generated method stub
+		return "C";
+	}
+	
 	
 	
 }
+

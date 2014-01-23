@@ -24,5 +24,16 @@
         android:layout_above="@id/scan_a_tag_view"
         android:background="@drawable/logo_blue"
         />
-	<include layout="@layout/acceptcancel_view"/>
+	<include layout="@layout/acceptcancel_view"/>           
+            <com.example.trustedtinythings.StyledTextView
+                android:id="@+id/info_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_below="@id/scan_a_tag_view"
+                android:gravity="center"
+                android:text="@string/scan"
+                android:textColor="@color/red"
+                android:textSize="15sp" />
+
     </RelativeLayout>

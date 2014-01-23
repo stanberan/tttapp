@@ -4,7 +4,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
   <style name="CustomTheme" parent="android:Theme.Holo">
-
+	
     <item name="android:buttonStyle">@style/ButtonCustomTheme</item>
 
     <item name="android:imageButtonStyle">@style/ImageButtonCustomTheme</item>
