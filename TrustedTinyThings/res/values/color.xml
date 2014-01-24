@@ -3,7 +3,7 @@
 
     <!-- Android style -->
     <color name="android_green">#A4C639</color>
-
+   <color name="transparent">#00000000</color>
     <!-- Windows 8 style -->
     <color name="win8_magenta">#FF0097</color>
     <color name="win8_purple">#A200FF</color>

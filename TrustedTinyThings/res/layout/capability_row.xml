@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/DarkGray" >
+    
+ <LinearLayout android:layout_width="50dp"
+     android:id="@+id/cap"
+     android:layout_margin="10dp"
+     android:layout_marginBottom="10dp"
+     			android:layout_height="50dp">
+  <TextView 
+      android:id="@+id/capital_letter_view"
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent"
+      android:background="@color/red"
+      android:textSize="30sp"
+      android:textColor="@color/white"
+      android:layout_gravity="center"
+      android:gravity="center"
+    
+      />  
+      </LinearLayout>
+      
+      <TextView 
+          android:id="@+id/row_title"
+          android:layout_toRightOf="@id/cap"
+          android:textStyle="bold"
+          android:textSize="15sp"
+          android:layout_alignTop="@id/cap"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textColor="@color/white"
+          android:text="Personal Data Consumption"
+          />
+      <TextView 
+          android:id="@+id/row_description"
+      	 android:layout_toRightOf="@id/cap"
+      	 android:layout_below="@id/row_title"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textColor="@color/white"
+          android:text="This device is collecting your personal data"
+    />
+      <ImageView 
+          android:layout_alignParentRight="true"
+          android:layout_centerVertical="true"
+     
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:background="@drawable/arrow"/>
+
+</RelativeLayout>

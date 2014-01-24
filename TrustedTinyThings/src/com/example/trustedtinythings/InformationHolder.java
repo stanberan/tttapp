@@ -17,6 +17,8 @@ String description;
 String deviceType;
 String imageURL;
 
+Company[]companies;
+DeviceData[] data;
 Capability[] capabilities;
 Quality[] qualities;
 @Override
@@ -29,6 +31,9 @@ public String toString() {
 			+ ", qualities=" + Arrays.toString(qualities) + "]";
 	
 
+	
+}
+public void setCompanies(){
 	
 }
 

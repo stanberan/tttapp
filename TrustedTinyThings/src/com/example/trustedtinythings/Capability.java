@@ -62,7 +62,7 @@ public String getCapabilityType() {
 	@Override
 	public String getTitle() {
 		// TODO Auto-generated method stub
-		return capabilityType;
+		return name;
 	}
 	@Override
 	public String getDescription() {

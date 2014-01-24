@@ -104,8 +104,11 @@ public class NFCActivity extends FragmentActivity {
 				}
 				info = "URI JELY:" + u + "\nURI From POSTER " + urltemp + "Size:"
 						+ ndefMessage.getRecords().length + "\nTYPE:" + type;
-				MD5 = Helpers.getMD5(rawMessage, idTag);
-
+				Intent in= new Intent(this, MainActivity.class);
+				in.putExtra("deviceId",MD5);
+				startActivity(in);
+				finish();
+				
 			}
 		}
 	}

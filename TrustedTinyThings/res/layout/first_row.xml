@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#50A9A9A9"
+    android:layout_margin="5dp">
+
+    <ImageView
+        android:id="@+id/you_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_margin="10dp"
+        android:background="@drawable/man1" />
+    
+    <LinearLayout
+        android:id="@+id/external_bodies_view"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/you_id"
+        android:orientation="horizontal" >
+        
+        <ImageView
+            android:background="@drawable/organisation"
+			android:layout_width="40dp"
+			android:layout_height="wrap_content"
+            />
+         <ImageView
+            android:background="@drawable/organisation"
+			android:layout_width="40dp"
+			android:layout_height="wrap_content"
+            />
+          <ImageView
+            android:background="@drawable/organisation"
+			android:layout_width="40dp"
+			android:layout_height="wrap_content"
+            />
+           <ImageView
+            android:background="@drawable/organisation"
+			android:layout_width="40dp"
+			android:layout_height="wrap_content"
+            />
+        
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/data_collected_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/external_bodies_view"
+        android:layout_toRightOf="@id/you_id"
+        android:orientation="horizontal" >
+    
+    
+    <ImageView
+            android:background="@drawable/data"
+			android:layout_width="40dp"
+			android:layout_height="wrap_content"
+            />
+    <ImageView
+            android:background="@drawable/data"
+			android:layout_width="40dp"
+			android:layout_height="wrap_content"
+            />
+    <ImageView
+            android:background="@drawable/data"
+			android:layout_width="40dp"
+			android:layout_height="wrap_content"
+            />
+ </LinearLayout>
+</RelativeLayout>
