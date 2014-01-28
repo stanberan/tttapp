@@ -29,7 +29,7 @@ public class ScanATagFragment extends Fragment{
 	
 	public void setInfo(String text){
 	//scan_a_tag=(TextView) getView().findViewById(R.id.scan_a_tag_view);
-		scan_a_tag.setText(text);
+		//scan_a_tag.setText(text);
 		
 	}
 }
