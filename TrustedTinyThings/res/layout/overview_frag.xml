@@ -19,7 +19,7 @@
             android:layout_margin="10dp"
             android:src="@drawable/busstop" />
 
-        <com.example.trustedtinythings.StyledTextView
+        <uk.ac.abdn.t3.trustedtinythings.StyledTextView
             android:id="@+id/device_description_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

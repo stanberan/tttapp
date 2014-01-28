@@ -17,7 +17,6 @@ import org.json.JSONObject;
 
 import uk.ac.abdn.t3.trustedtinythings.OverviewListAdapter.GenericRow;
 
-import com.example.trustedtinythings.R;
 import com.squareup.picasso.Picasso;
 
 import android.net.Uri;

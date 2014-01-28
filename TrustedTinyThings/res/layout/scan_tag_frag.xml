@@ -6,7 +6,7 @@
     android:orientation="vertical"
   >
  
-            <com.example.trustedtinythings.StyledTextView
+            <uk.ac.abdn.t3.trustedtinythings.StyledTextView
                 android:id="@+id/scan_a_tag_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
         />
        <!--      
 	<include layout="@layout/acceptcancel_view"/>           
-            <com.example.trustedtinythings.StyledTextView
+            <uk.ac.abdn.t3.trustedtinythings.StyledTextView
                 android:id="@+id/info_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

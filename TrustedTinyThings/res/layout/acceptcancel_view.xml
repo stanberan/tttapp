@@ -4,7 +4,7 @@
                android:layout_height="wrap_content"
                android:orientation="horizontal"
                android:layout_alignParentBottom="true"  >
-       <com.example.trustedtinythings.StyledButton
+       <uk.ac.abdn.t3.trustedtinythings.StyledButton
            android:id="@+id/accept_button"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -16,7 +16,7 @@
                 android:textColor="@color/Ivory"
                 android:textSize="20sp" />
        
-       <com.example.trustedtinythings.StyledButton
+       <uk.ac.abdn.t3.trustedtinythings.StyledButton
            android:id="@+id/cancel_button"
                 android:layout_width="match_parent"
                 android:layout_weight="1"
