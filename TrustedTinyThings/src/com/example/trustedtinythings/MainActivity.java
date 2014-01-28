@@ -9,6 +9,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 import com.example.trustedtinythings.OverviewListAdapter.GenericRow;
 import com.squareup.picasso.Picasso;
 
+import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -24,6 +26,8 @@ import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.util.TypedValue;
@@ -61,7 +65,13 @@ LinearLayout collectedData;
 TextView details;
 Animation animFadein;
 ImageView logodetails;
+
+
 static InformationHolder holder=null;
+
+String android_id=null;
+String MD5=null;
+String URL=null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -89,9 +99,6 @@ static InformationHolder holder=null;
 		
 		//NEW 
 		
-		
-		
-		
 		deviceImage=(ImageView)findViewById(R.id.device_image_view);
 		deviceDescription=(StyledTextView)findViewById(R.id.device_description_view);
 		capabilityQualityList=(ListView)findViewById(R.id.capability_quality_list_view);
@@ -100,17 +107,48 @@ static InformationHolder holder=null;
 		details=(TextView)findViewById(R.id.details_textview);
 		logodetails=(ImageView)findViewById(R.id.details_imageview);
 	
+		accept=(StyledButton)findViewById(R.id.accept_button);
+		accept.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				new AcceptResponse().execute(new String[]{android_id,MD5,URL});
+				
+			}
+			
+		});
+		
+		cancel=(StyledButton)findViewById(R.id.cancel_button);
+		cancel.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				Toast.makeText(MainActivity.this,"Exiting app and canceling forwarding to service",Toast.LENGTH_LONG).show();
+				finish();
+				
+			}
+			
+		});
+		
+		
+		
+		
 		Bundle extra=getIntent().getExtras();
 		if(extra!=null){
-			String deviceId=extra.getString("deviceId");
-
-		if(deviceId!=null){
-		new ServerResponse().execute(new String[]{deviceId});
-		Toast.makeText(this, "PROPER RESPONSE", Toast.LENGTH_LONG).show();
+			String response=extra.getString("response");
+			
+		if(response!=null){
+		android_id=extra.getString("android_id");
+		URL=extra.getString("URL");
+		MD5=extra.getString("MD5");
+		setHolder(response);
+		Toast.makeText(this, "Data to populate view set", Toast.LENGTH_LONG).show();
+		populateView(holder);
 		}
+		
 		}
 		else{
-			new ServerResponse().execute(new String[]{"MD5Hash"});
+			Toast.makeText(this, "Something went wrong with NFC Activity!", Toast.LENGTH_LONG).show();
 		}
 		
 		animFadein = AnimationUtils.loadAnimation(getApplicationContext(),
@@ -374,61 +412,53 @@ public Capability[] getCapabilities(JSONArray capabilities){
     	
     }
 
-	
-	private class ServerResponse extends AsyncTask<String, String, String> {
 
-		
-		
-		
-		
-		
-		
-        @Override
-        protected String doInBackground(String... params) {
-        	publishProgress("Creating Http Client...");
-        	String urlRequest="http://t3.abdn.ac.uk:8080/t3/1/thing/"+params[0]+"/information";
-        	HttpClient httpclient= Helpers.createHttpClient();
-        	publishProgress("Http Client created...");
-        	HttpGet httpget = new HttpGet(urlRequest);
-        	//setCredentials(httpGet)
-        	//addHeaders(httpGet)
-        	httpget.addHeader("accept", "application/json");
-        	
-        	HttpResponse response;
-        	try{
-        		publishProgress("Getting response from server");
-        		response =httpclient.execute(httpget);
-        		if(response.getStatusLine().getStatusCode()!=200){
-        			return null;
-        		}
-        		HttpEntity entity= response.getEntity();
-        		publishProgress("Converting entity to String");
-        		String responseContent=EntityUtils.toString(response.getEntity());
-        		return responseContent;
-        	}
-        	catch(Exception e){
-        		e.printStackTrace();
-        		return null;
-        	}
-       
-        }
-        
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-        // infoText.setText(values[0]);
-        }
+ 
+ private class AcceptResponse extends AsyncTask<String, Boolean, Boolean> {
 
-        @Override
-        protected void onPostExecute(String result) {
-        	if(result!=null){
-        //	responseText.setText(result);
-        	}
-        	setHolder(result);
-        	populateView(holder);
-	
-}
+	@Override
+	protected Boolean doInBackground(String... params) {
+		
+		 String urlRequest="http://t3.abdn.ac.uk:8080/t3/1/user/accept/"+params[0]+"/"+params[1];
+	    	HttpClient httpclient= new DefaultHttpClient();
+	    	HttpGet httpget = new HttpGet(urlRequest);
+	    	HttpResponse response;
+	    	try{
+	    		response =httpclient.execute(httpget);
+	    		HttpEntity entity= response.getEntity();
+	    		if(response.getStatusLine().getStatusCode()==200){
+	    			 Toast.makeText(getApplicationContext(), "This IOT Device was succesfully added to your list of accepted devices" , Toast.LENGTH_LONG).show();
+	    			 Intent i= new Intent(Intent.ACTION_VIEW);
+	    			 i.setData(Uri.parse(params[2]));
+	    			 startActivity(i);
+	    			 finish();
+	    			 return true;
+	    		}
+	    		else{
+	    			 Toast.makeText(getApplicationContext(), "Server Timeout????Device not added to your list" , Toast.LENGTH_LONG).show();
+	    			 return false;
+	    		}
+	    	}
+	    	catch(Exception e){
+	    		e.printStackTrace();
+	    	}
+		return null;
 	}
+	protected void onPostExecute(Boolean b){
+	
+		
+	}
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+ }
+ 
+
 
 
 	@Override
@@ -455,9 +485,9 @@ public Capability[] getCapabilities(JSONArray capabilities){
 		
 	}
 	
+
+	}
 	
-	
-	
-}
+
     
    

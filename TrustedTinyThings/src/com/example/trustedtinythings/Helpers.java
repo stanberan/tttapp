@@ -16,6 +16,10 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+
 public class Helpers {
 
 	public static DefaultHttpClient createHttpClient() { 
@@ -67,4 +71,39 @@ public class Helpers {
 			return "";		
 		
 	}
+	
+	
+	
+	public static void alertDialog(String title, String message, Context c){
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+				c);
+ 
+			// set title
+			alertDialogBuilder.setTitle(title);
+ 
+			// set dialog message
+			alertDialogBuilder
+				.setMessage(message)
+				.setCancelable(true)
+				.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,int id) {
+						// if this button is clicked, close
+						// current activity
+						
+					}
+				  })
+				;
+ 
+				// create alert dialog
+				AlertDialog alertDialog = alertDialogBuilder.create();
+ 
+				// show it
+				alertDialog.show();
+			}
+	
+	
+	
+	
+	
+	
 }

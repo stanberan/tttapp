@@ -24,6 +24,7 @@
         android:layout_above="@id/scan_a_tag_view"
         android:background="@drawable/logo_blue"
         />
+       <!--      
 	<include layout="@layout/acceptcancel_view"/>           
             <com.example.trustedtinythings.StyledTextView
                 android:id="@+id/info_view"
@@ -35,5 +36,5 @@
                 android:text="@string/scan"
                 android:textColor="@color/red"
                 android:textSize="15sp" />
-
+--> 
     </RelativeLayout>

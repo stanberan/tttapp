@@ -14,7 +14,7 @@ public class ScanATagFragment extends Fragment{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 			View result=inflater.inflate(R.layout.scan_tag_frag,container,false);		
-			scan_a_tag=(StyledTextView)result.findViewById(R.id.info_view);	
+		//	scan_a_tag=(StyledTextView)result.findViewById(R.id.info_view);	
 			return result;
 			
 }
