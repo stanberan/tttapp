@@ -331,11 +331,11 @@ public  void alertDialog(String title, String message, Context c){
 			alertDialogBuilder
 				.setMessage(R.string.terms_conditions)
 				.setCancelable(true)
-				.setPositiveButton("Accept",new DialogInterface.OnClickListener() {
+				.setPositiveButton("I Agree to terms and conditions",new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog,int id) {
 						  prefs.edit().putBoolean("EULA_ACCEPTED", true).commit();
 					}
-				  }).setNegativeButton("No",new DialogInterface.OnClickListener() {
+				  }).setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog,int id) {
 							// if this button is clicked, just close
 							// the dialog box and do nothing

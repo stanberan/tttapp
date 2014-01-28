@@ -4,6 +4,19 @@
                android:layout_height="wrap_content"
                android:orientation="horizontal"
                android:layout_alignParentBottom="true"  >
+               
+         <uk.ac.abdn.t3.trustedtinythings.StyledButton
+           android:id="@+id/cancel_button"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_height="match_parent"    
+    			android:layout_margin="5dp"
+                android:text="@string/cancel"
+                android:background="@color/red"
+                android:textColor="@color/Ivory"
+                android:textSize="20sp" />
+      
+      
        <uk.ac.abdn.t3.trustedtinythings.StyledButton
            android:id="@+id/accept_button"
                 android:layout_width="match_parent"
@@ -16,15 +29,6 @@
                 android:textColor="@color/Ivory"
                 android:textSize="20sp" />
        
-       <uk.ac.abdn.t3.trustedtinythings.StyledButton
-           android:id="@+id/cancel_button"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:layout_height="match_parent"    
-    			android:layout_margin="5dp"
-                android:text="@string/cancel"
-                android:background="@color/red"
-                android:textColor="@color/Ivory"
-                android:textSize="20sp" />
+    
        
        </LinearLayout> 
