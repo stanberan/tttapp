@@ -7,7 +7,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
-
 import android.net.Uri;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
@@ -17,12 +16,14 @@ import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.FragmentActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -36,7 +37,7 @@ public class NFCActivity extends FragmentActivity {
 	boolean first=false;
 	String urlAction=null;
 	String uid;
-
+	SharedPreferences prefs;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,7 +48,10 @@ public class NFCActivity extends FragmentActivity {
 					Toast.LENGTH_LONG).show();
 			finish();
 		}
+		
 */
+	
+		
 		if (getSupportFragmentManager().findFragmentById(android.R.id.content) == null) {
 			scan = new ScanATagFragment();
 			first=true;
@@ -58,7 +62,20 @@ public class NFCActivity extends FragmentActivity {
 					.add(android.R.id.content, scan).commit();
 		}
 
+		
+		prefs= PreferenceManager.getDefaultSharedPreferences(this);
+		if(!prefs.getBoolean("EULA_ACCEPTED", false)) {
+		    showEula();
+		    // Determine if EULA was accepted this time
+		  
+		}
+		else{
 		handleIntent(getIntent());
+		
+		}
+	
+		
+		
 	}
 
 	@Override
@@ -279,7 +296,7 @@ public  void alertDialog(String title, String message, Context c){
 		// set dialog message
 		alertDialogBuilder
 			.setMessage(message)
-			.setCancelable(true)
+			.setCancelable(false)
 			.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog,int id) {
 					Intent i = new Intent(Intent.ACTION_VIEW);
@@ -303,8 +320,44 @@ public  void alertDialog(String title, String message, Context c){
 			// show it
 			alertDialog.show();
 		}
+ public void showEula(){
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+				this);
 
-}
+			// set title
+			alertDialogBuilder.setTitle("Terms & Conditions");
+
+			// set dialog message
+			alertDialogBuilder
+				.setMessage(R.string.terms_conditions)
+				.setCancelable(true)
+				.setPositiveButton("Accept",new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,int id) {
+						  prefs.edit().putBoolean("EULA_ACCEPTED", true).commit();
+					}
+				  }).setNegativeButton("No",new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,int id) {
+							// if this button is clicked, just close
+							// the dialog box and do nothing
+							dialog.cancel();
+							finish();
+						}
+					})
+				;
+
+				// create alert dialog
+				AlertDialog alertDialog = alertDialogBuilder.create();
+				// show it
+				alertDialog.show();
+			}
+	 
+	 
+	 
+	 
+	 
+	 
+ }
+
 
 	
 	
