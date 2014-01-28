@@ -425,13 +425,9 @@ public Capability[] getCapabilities(JSONArray capabilities){
 	    	HttpResponse response;
 	    	try{
 	    		response =httpclient.execute(httpget);
-	    		HttpEntity entity= response.getEntity();
+	    
 	    		if(response.getStatusLine().getStatusCode()==200){
-	    			 Toast.makeText(getApplicationContext(), "This IOT Device was succesfully added to your list of accepted devices" , Toast.LENGTH_LONG).show();
-	    			 Intent i= new Intent(Intent.ACTION_VIEW);
-	    			 i.setData(Uri.parse(params[2]));
-	    			 startActivity(i);
-	    			 finish();
+	    			
 	    			 return true;
 	    		}
 	    		else{
@@ -445,7 +441,13 @@ public Capability[] getCapabilities(JSONArray capabilities){
 		return null;
 	}
 	protected void onPostExecute(Boolean b){
-	
+	if(b){
+		 Toast.makeText(getApplicationContext(), "This IOT Device was succesfully added to your list of accepted devices" , Toast.LENGTH_LONG).show();
+		 Intent i= new Intent(Intent.ACTION_VIEW);
+		 i.setData(Uri.parse(URL));
+		 startActivity(i);
+		 finish();
+	}
 		
 	}
 	 
