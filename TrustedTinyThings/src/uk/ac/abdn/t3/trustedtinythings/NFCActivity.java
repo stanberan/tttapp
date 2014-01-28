@@ -25,6 +25,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
@@ -55,18 +56,9 @@ public class NFCActivity extends FragmentActivity {
 		
 */
 	
-		
-		if (getSupportFragmentManager().findFragmentById(android.R.id.content) == null) {
-			scan = new ScanATagFragment();
-			first=true;
-			getSupportFragmentManager()
-					.beginTransaction()
-					.setCustomAnimations(android.R.anim.fade_in,
-							android.R.anim.fade_out)
-					.add(android.R.id.content, scan).commit();
-		}
-
-		
+	
+		setContentView(R.layout.scan_activity);
+		scan=(ScanATagFragment)getSupportFragmentManager().findFragmentById(R.id.scan_a_tag);
 		prefs= PreferenceManager.getDefaultSharedPreferences(this);
 		if(!prefs.getBoolean("EULA_ACCEPTED", false)) {
 		    showEula();
@@ -90,6 +82,7 @@ public class NFCActivity extends FragmentActivity {
 	}
 
 	public void onResume() {
+		
 		super.onResume();
 		
 	}
@@ -215,8 +208,10 @@ private class ServerResponse extends AsyncTask<String, String, String> {
         	if(result!=null){
         		Intent i = new Intent(Intent.ACTION_VIEW);
         		i.setData(Uri.parse(urlAction));
+        		scan.setProgress(false);
         		startActivity(i);
         		//end our application
+        		
         		finish();
         	}
         	else{
@@ -283,6 +278,7 @@ private class DeviceExist extends AsyncTask<String, String, String> {
     s.putExtra("android_id", uid);
     s.putExtra("MD5", MD5);
     s.putExtra("URL",urlAction);
+    scan.setProgress(false);
     startActivity(s);
     finish();
     	}
