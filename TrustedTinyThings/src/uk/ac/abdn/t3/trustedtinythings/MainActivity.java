@@ -1,4 +1,4 @@
-package com.example.trustedtinythings;
+package uk.ac.abdn.t3.trustedtinythings;
 
 
 
@@ -15,7 +15,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.example.trustedtinythings.OverviewListAdapter.GenericRow;
+import uk.ac.abdn.t3.trustedtinythings.OverviewListAdapter.GenericRow;
+
+import com.example.trustedtinythings.R;
 import com.squareup.picasso.Picasso;
 
 import android.net.Uri;

@@ -1,4 +1,4 @@
-package com.example.trustedtinythings;
+package uk.ac.abdn.t3.trustedtinythings;
 
 public class Quality implements OverviewListAdapter.GenericRow{
 String provider;

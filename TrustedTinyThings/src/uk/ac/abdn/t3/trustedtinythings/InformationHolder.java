@@ -1,9 +1,9 @@
-package com.example.trustedtinythings;
+package uk.ac.abdn.t3.trustedtinythings;
 
 import java.util.Arrays;
 
-import com.example.trustedtinythings.Capability;
-import com.example.trustedtinythings.Quality;
+import uk.ac.abdn.t3.trustedtinythings.Capability;
+import uk.ac.abdn.t3.trustedtinythings.Quality;
 
 public class InformationHolder {
 

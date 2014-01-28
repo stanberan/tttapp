@@ -1,6 +1,9 @@
-package com.example.trustedtinythings;
+package uk.ac.abdn.t3.trustedtinythings;
 
 import java.util.ArrayList;
+
+import com.example.trustedtinythings.R;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
