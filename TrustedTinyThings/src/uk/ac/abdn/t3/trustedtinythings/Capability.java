@@ -1,7 +1,16 @@
 package uk.ac.abdn.t3.trustedtinythings;
 
-public class Capability implements OverviewListAdapter.GenericRow {
+import android.os.Parcel;
+import android.os.Parcelable;
 
+public class Capability implements OverviewListAdapter.GenericRow,Parcelable {
+
+	public Capability(){}
+	public Capability(Parcel in){
+		readFromParcel(in);
+	}
+	
+	
 	public String getConsumer() {
 		return consumer;
 	}
@@ -61,20 +70,55 @@ public String getCapabilityType() {
 	}
 	@Override
 	public String getTitle() {
-		// TODO Auto-generated method stub
+	
 		return name;
 	}
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
+		// TODO Get description from server
 		return "This device is collecting your data";
 	}
 	@Override
 	public String getLetter() {
-		// TODO Auto-generated method stub
+	
 		return "C";
 	}
-	
+	@Override
+	public int describeContents() {
+		
+		return 0;
+	}
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		// TODO Auto-generated method stub
+		dest.writeString(consumer);
+		dest.writeString(consumerURL);
+		dest.writeString(consumes);
+		dest.writeString(purpose);
+		dest.writeString(name);
+		dest.writeString(consumerLogo);
+		dest.writeString(capabilityType);
+		
+	}
+	private void readFromParcel(Parcel in) {  
+		consumer=in.readString();
+		consumerURL=in.readString();
+		consumes=in.readString();
+		purpose=in.readString();
+		name=in.readString();
+		consumerLogo=in.readString();
+		capabilityType=in.readString();
+	}
+	public static final Parcelable.Creator CREATOR =
+		    new Parcelable.Creator() {
+		        public Capability createFromParcel(Parcel in) {
+		            return new Capability(in);
+		        }
+
+		        public Capability[] newArray(int size) {
+		            return new Capability[size];
+		        }
+		    };
 	
 	
 }

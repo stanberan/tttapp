@@ -28,9 +28,11 @@ import android.support.v4.app.FragmentActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class NFCActivity extends FragmentActivity {
+	ProgressBar progress;
 	static ScanATagFragment scan = null;
 	static String info = "noinfo";
 	static String MD5 = null;
@@ -38,6 +40,8 @@ public class NFCActivity extends FragmentActivity {
 	String urlAction=null;
 	String uid;
 	SharedPreferences prefs;
+	
+	static boolean connected=true;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -87,14 +91,16 @@ public class NFCActivity extends FragmentActivity {
 
 	public void onResume() {
 		super.onResume();
-		scan.setInfo(info);
+		
 	}
 
 	@SuppressLint("NewApi")
 	public void handleIntent(Intent i) {
+	
+		
 		String action = i.getAction();
 		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-
+			scan.setProgress(true);
 			Log.e("NFC", "Discovered NFC with NDEF");
 			String scheme = i.getScheme();
 			if (scheme.equals("http")) {
@@ -242,6 +248,8 @@ private class DeviceExist extends AsyncTask<String, String, String> {
     	
     	HttpResponse response;
     	try{
+    		//first network call
+    		connected=true;
     		publishProgress("Getting response from server");
     		response =httpclient.execute(httpget);
     		if(response.getStatusLine().getStatusCode()!=200){
@@ -254,6 +262,8 @@ private class DeviceExist extends AsyncTask<String, String, String> {
     	}
     	catch(Exception e){
     		e.printStackTrace();
+    		connected=false;
+    		
     		return null;
     	}
    
@@ -278,7 +288,15 @@ private class DeviceExist extends AsyncTask<String, String, String> {
     	}
   
     	else{
-    		alertDialog("WARNING!","I am sorry, but this device was not recognized in our system. Would you still like to execute its intent?",NFCActivity.this);
+    		scan.setProgress(false);
+    		if(connected){
+    		alertDialog("WARNING!","I am sorry, but this device was not recognized in our system.\n Would you still like to execute its content?",NFCActivity.this);
+    	}
+    		else{
+    			Toast.makeText(NFCActivity.this, "Seems there is an issue with your internet connection",Toast.LENGTH_LONG).show();
+    		}
+    	
+    	
     	}
 }
 }
@@ -296,7 +314,7 @@ public  void alertDialog(String title, String message, Context c){
 		// set dialog message
 		alertDialogBuilder
 			.setMessage(message)
-			.setCancelable(false)
+			.setCancelable(false).setIcon(getResources().getDrawable(R.drawable.notfound))
 			.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog,int id) {
 					Intent i = new Intent(Intent.ACTION_VIEW);
@@ -330,7 +348,7 @@ public  void alertDialog(String title, String message, Context c){
 			// set dialog message
 			alertDialogBuilder
 				.setMessage(R.string.terms_conditions)
-				.setCancelable(true)
+				.setCancelable(false)
 				.setPositiveButton("I Agree to terms and conditions",new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog,int id) {
 						  prefs.edit().putBoolean("EULA_ACCEPTED", true).commit();

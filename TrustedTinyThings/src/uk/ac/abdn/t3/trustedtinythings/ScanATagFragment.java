@@ -7,15 +7,17 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class ScanATagFragment extends Fragment{
 	
-	private static StyledTextView scan_a_tag=null;
+	
+	private static ProgressBar progress=null;
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 			View result=inflater.inflate(R.layout.scan_tag_frag,container,false);		
-		//	scan_a_tag=(StyledTextView)result.findViewById(R.id.info_view);	
+			progress=(ProgressBar)result.findViewById(R.id.progressBar1);	
 			return result;
 			
 }
@@ -28,9 +30,14 @@ public class ScanATagFragment extends Fragment{
 	
 	
 	
-	public void setInfo(String text){
-	//scan_a_tag=(TextView) getView().findViewById(R.id.scan_a_tag_view);
-		//scan_a_tag.setText(text);
+	public void setProgress(boolean p){
+		if(p){
+			progress.setVisibility(View.VISIBLE);
+		}
+		else{
+			progress.setVisibility(View.GONE);
+		}
+
 		
 	}
 }

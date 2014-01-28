@@ -24,6 +24,7 @@ import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -39,6 +40,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -66,18 +69,22 @@ LinearLayout collectedData;
 TextView details;
 Animation animFadein;
 ImageView logodetails;
-
+LinearLayout dropdown;
 
 static InformationHolder holder=null;
 
-String android_id=null;
-String MD5=null;
-String URL=null;
+static String  android_id=null;
+static String  MD5=null;
+static String URL=null;
+
+ArrayList<GenericRow> combinedView;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	
 		setContentView(R.layout.overview_frag);
+		combinedView=new ArrayList<GenericRow>();
 		responseText=(TextView)findViewById(R.id.responseText);
 		infoText=(TextView)findViewById(R.id.infoText);		
 		manufacturerLogo=(ImageView)findViewById(R.id.manufacturerlogo);
@@ -99,7 +106,7 @@ String URL=null;
 		*/
 		
 		//NEW 
-		
+		dropdown=(LinearLayout)findViewById(R.id.dropdown_layout);
 		deviceImage=(ImageView)findViewById(R.id.device_image_view);
 		deviceDescription=(StyledTextView)findViewById(R.id.device_description_view);
 		capabilityQualityList=(ListView)findViewById(R.id.capability_quality_list_view);
@@ -149,7 +156,8 @@ String URL=null;
 		
 		}
 		else{
-			Toast.makeText(this, "Something went wrong with NFC Activity!", Toast.LENGTH_LONG).show();
+			populateView(holder);
+		//	Toast.makeText(this, "Something went wrong with NFC Activity!", Toast.LENGTH_LONG).show();
 		}
 		
 		animFadein = AnimationUtils.loadAnimation(getApplicationContext(),
@@ -172,7 +180,7 @@ String URL=null;
 	static int lastid=-1;
 	static int click=0;
 	
-	private void populateView(InformationHolder hol){
+	private void populateView(final InformationHolder hol){
 		
 		
 		ArrayList<Company> companies=new ArrayList<Company>();
@@ -198,6 +206,7 @@ String URL=null;
 	            //Inform the user the button has been clicked
 	        	ImageView v1=(ImageView)v;
 	            int id=v1.getId();
+	            logodetails.setVisibility(View.VISIBLE);
 	            if(lastid!=-1){
 	            ImageView lastview=(ImageView)findViewById(lastid);
 	            if(lastview.getId()==v1.getId()){
@@ -205,35 +214,30 @@ String URL=null;
 	            		lastid=-1;
 	            		click=0;
 	            	}
-	          		details.clearAnimation();
-	            	 details.setVisibility(View.GONE);
-	            	 logodetails.setVisibility(View.GONE);
+	          		dropdown.clearAnimation();
+	            	dropdown.setVisibility(View.GONE);
 	          
 	                  v1.setBackgroundColor(getResources().getColor(R.color.transparent));
 	                  click++;
 	            }
 	            else if(lastview.getId()!=v1.getId()){
-	            
-	            	details.setVisibility(View.VISIBLE);
-	            	details.startAnimation(animFadein);
-	            	details.setText(holder.companies[id-100].name);
-	            	logodetails.setVisibility(View.VISIBLE);
-	            	logodetails.startAnimation(animFadein);
 	            	Picasso.with(MainActivity.this).load(holder.companies[id-100].logo).into(logodetails);
-	            
-	            	v1.setBackgroundColor(getResources().getColor(R.color.green));
+	            	details.setText(holder.companies[id-100].name);
+	            	dropdown.setVisibility(View.VISIBLE);
+	            	dropdown.startAnimation(animFadein);	
+	            	
+	            	v1.setBackgroundColor(getResources().getColor(R.color.DarkGray));
 	            	lastview.setBackgroundColor(getResources().getColor(R.color.transparent));
 	            	lastid=v1.getId();
 	            }
 
 	    }
 	            else{
-	            	details.setVisibility(View.VISIBLE);
-	            	logodetails.setVisibility(View.VISIBLE);
-	            	details.startAnimation(animFadein);
-	            	logodetails.startAnimation(animFadein);
-	            	details.setText(holder.companies[id-100].name);
-	            	v1.setBackgroundColor(getResources().getColor(R.color.green));
+	              	details.setText(holder.companies[id-100].name);
+	            	dropdown.setVisibility(View.VISIBLE);
+	            	dropdown.startAnimation(animFadein);
+
+	            	v1.setBackgroundColor(getResources().getColor(R.color.DarkGray));
 	            	lastid=v1.getId();
 	            }
 	        }
@@ -247,6 +251,7 @@ String URL=null;
 	        @SuppressLint("NewApi")
 			public void onClick(final View v) {
 	            //Inform the user the button has been clicked
+	        	logodetails.setVisibility(View.GONE);
 	        	ImageView v1=(ImageView)v;
 	            int id=v1.getId();
 	            if(lastid!=-1){
@@ -256,29 +261,29 @@ String URL=null;
 	            		lastid=-1;
 	            		click=0;
 	            	}
-	          		details.clearAnimation();
-	            	 details.setVisibility(View.GONE);
-	            	 logodetails.setVisibility(View.GONE);
+	            	dropdown.clearAnimation();
+	            	dropdown.setVisibility(View.GONE);
 	                  v1.setBackgroundColor(getResources().getColor(R.color.transparent));
 	                  click++;
 	            }
 	            else if(lastview.getId()!=v1.getId()){
-	            
-	            	details.setVisibility(View.VISIBLE);
-	            	details.startAnimation(animFadein);
+	            	details.setText(holder.capabilities[id].consumes);
+	            	dropdown.setVisibility(View.VISIBLE);
+	            	dropdown.startAnimation(animFadein);
 	            	details.setText(holder.capabilities[id].consumes);
 	            
-	            	v1.setBackgroundColor(getResources().getColor(R.color.green));
+	            	v1.setBackgroundColor(getResources().getColor(R.color.DarkGray));
 	            	lastview.setBackgroundColor(getResources().getColor(R.color.transparent));
 	            	lastid=v1.getId();
 	            }
 
 	    }
 	            else{
-	            	details.setVisibility(View.VISIBLE);
-	            	details.startAnimation(animFadein);
 	            	details.setText(holder.capabilities[id].consumes);
-	            	v1.setBackgroundColor(getResources().getColor(R.color.green));
+	            	dropdown.setVisibility(View.VISIBLE);
+	            	dropdown.startAnimation(animFadein);
+	            	
+	            	v1.setBackgroundColor(getResources().getColor(R.color.DarkGray));
 	            	lastid=v1.getId();
 	            }
 	        }
@@ -322,13 +327,38 @@ String URL=null;
 		
 		ArrayList<GenericRow> ada=new ArrayList<GenericRow>(Arrays.asList(hol.capabilities));
 		ArrayList<GenericRow> qual=new ArrayList<GenericRow>(Arrays.asList(hol.qualities));
-		ada.addAll(qual);
+		combinedView.addAll(ada);
+		combinedView.addAll(qual);
 		capabilityQualityList.setScrollContainer(false);
-		capabilityQualityList.setAdapter(new OverviewListAdapter(this,R.layout.capability_row,ada));
+		capabilityQualityList.setAdapter(new OverviewListAdapter(this,R.layout.capability_row,combinedView));
 		
-		
+		capabilityQualityList.setOnItemClickListener(new OnItemClickListener() {
+	        public void onItemClick(AdapterView<?> parent, View view,
+	                int position, long id) {
+
+	      Object o = capabilityQualityList.getItemAtPosition(position);
+	       GenericRow row=(GenericRow)o;//As you are using Default String Adapter
+	      // Toast.makeText(getBaseContext(),row.getTitle(),Toast.LENGTH_SHORT).show();
+	       
+	       if(row instanceof Capability){
+	    	   Capability cap=(Capability)row;
+	    	   Toast.makeText(getBaseContext(),cap.toString(),Toast.LENGTH_LONG).show();
+	    	 
+	    	   Intent i=new Intent(MainActivity.this,CapabilityActivity.class);	
+	    	   i.putExtra("uk.ac.abdn.t3.trustedtinythings.capabilities",hol.capabilities);
+	    	   startActivity(i);
+	    	   
+	       }
+	       
+	       
+	       
+	       
+	        }
+	    });
 		
 	}
+	
+	
 				
 	public void setHolder(String response){
 		
