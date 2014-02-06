@@ -32,8 +32,11 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -66,12 +69,11 @@ StyledButton accept;
 StyledButton cancel;
 LinearLayout externalBodies;
 LinearLayout collectedData;
-TextView details;
+StyledTextView details;
 Animation animFadein;
 ImageView logodetails;
 LinearLayout dropdown;
-
-static InformationHolder holder=null;
+LinearLayout overviewDetailsLayout;
 
 static String  android_id=null;
 static String  MD5=null;
@@ -96,30 +98,55 @@ ArrayList<GenericRow> combinedView;
 			@Override
 			public void onClick(View v) {
 				Toast.makeText(MainActivity.this, "Clicked", Toast.LENGTH_LONG).show();
-				Picasso.with(MainActivity.this).load(holder.manufacturerLogo).resize(200,200).into(manufacturerLogo);
-				Picasso.with(MainActivity.this).load(holder.ownerLogo).into(ownerLogo);
-				Picasso.with(MainActivity.this).load(holder.capabilities[0].consumerLogo).into(consumerLogo);
+				Picasso.with(MainActivity.this).load(InformationHolder.holder.manufacturerLogo).resize(200,200).into(manufacturerLogo);
+				Picasso.with(MainActivity.this).load(InformationHolder.holder.ownerLogo).into(ownerLogo);
+				Picasso.with(MainActivity.this).load(InformationHolder.holder.capabilities[0].consumerLogo).into(consumerLogo);
 				
 			}
 		});
 		
 		*/
 		
-		//NEW 
+		//NEW
+		overviewDetailsLayout=(LinearLayout)findViewById(R.id.overview_details_layout);
 		dropdown=(LinearLayout)findViewById(R.id.dropdown_layout);
 		deviceImage=(ImageView)findViewById(R.id.device_image_view);
 		deviceDescription=(StyledTextView)findViewById(R.id.device_description_view);
 		capabilityQualityList=(ListView)findViewById(R.id.capability_quality_list_view);
 		externalBodies=(LinearLayout)findViewById(R.id.external_bodies_view);
 		collectedData=(LinearLayout)findViewById(R.id.data_collected_view);
-		details=(TextView)findViewById(R.id.details_textview);
+		details=(StyledTextView)findViewById(R.id.details_textview);
 		logodetails=(ImageView)findViewById(R.id.details_imageview);
 	
-		accept=(StyledButton)findViewById(R.id.accept_button);
-		accept.setOnClickListener(new OnClickListener(){
+		
+		overviewDetailsLayout.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
+				Intent i =new Intent(MainActivity.this, DeviceDetailsActivity.class);
+				startActivity(i);
+				
+			}
+			
+			
+			
+			
+		});
+		
+		
+		
+		
+		
+		accept=(StyledButton)findViewById(R.id.accept_button);
+		accept.setOnClickListener(new OnClickListener(){
+
+			
+			
+			
+			
+			@Override
+			public void onClick(View v) {
+				 Toast.makeText(getApplicationContext(),"Device id : "+android_id +"Iot ID:"+MD5, Toast.LENGTH_LONG).show();
 				new AcceptResponse().execute(new String[]{android_id,MD5,URL});
 				
 			}
@@ -151,17 +178,17 @@ ArrayList<GenericRow> combinedView;
 		MD5=extra.getString("MD5");
 		setHolder(response);
 		Toast.makeText(this, "Data to populate view set", Toast.LENGTH_LONG).show();
-		populateView(holder);
+		populateView(InformationHolder.holder);
 		}
 		
 		}
 		else{
-			populateView(holder);
+			populateView(InformationHolder.holder);
 		//	Toast.makeText(this, "Something went wrong with NFC Activity!", Toast.LENGTH_LONG).show();
 		}
 		
 		animFadein = AnimationUtils.loadAnimation(getApplicationContext(),
-	             R.anim.scale);
+	             R.anim.slide_up_left);
 	      
 	     // set animation listener
 	     animFadein.setAnimationListener(this);
@@ -189,7 +216,7 @@ ArrayList<GenericRow> combinedView;
 		c.name=hol.owner;
 		Company d=new Company();
 		d.logo=hol.manufacturerLogo;
-		d.name=hol.manufacturerURL;
+		d.name=hol.manufacturer;
 		companies.add(c);
 		companies.add(d);
 		Company e=new Company();
@@ -217,27 +244,27 @@ ArrayList<GenericRow> combinedView;
 	          		dropdown.clearAnimation();
 	            	dropdown.setVisibility(View.GONE);
 	          
-	                  v1.setBackgroundColor(getResources().getColor(R.color.transparent));
+	                  v1.setBackground(null);
 	                  click++;
 	            }
 	            else if(lastview.getId()!=v1.getId()){
-	            	Picasso.with(MainActivity.this).load(holder.companies[id-100].logo).into(logodetails);
-	            	details.setText(holder.companies[id-100].name);
+	            	Picasso.with(MainActivity.this).load(InformationHolder.holder.companies[id-100].logo).into(logodetails);
+	            	details.setText(InformationHolder.holder.companies[id-100].name);
 	            	dropdown.setVisibility(View.VISIBLE);
 	            	dropdown.startAnimation(animFadein);	
 	            	
-	            	v1.setBackgroundColor(getResources().getColor(R.color.DarkGray));
-	            	lastview.setBackgroundColor(getResources().getColor(R.color.transparent));
+	            	v1.setBackgroundColor(getResources().getColor(R.color.yellow));
+	            	lastview.setBackground(null);
 	            	lastid=v1.getId();
 	            }
 
 	    }
 	            else{
-	              	details.setText(holder.companies[id-100].name);
+	              	details.setText(InformationHolder.holder.companies[id-100].name);
 	            	dropdown.setVisibility(View.VISIBLE);
 	            	dropdown.startAnimation(animFadein);
 
-	            	v1.setBackgroundColor(getResources().getColor(R.color.DarkGray));
+	            	v1.setBackgroundColor(getResources().getColor(R.color.yellow));
 	            	lastid=v1.getId();
 	            }
 	        }
@@ -263,27 +290,27 @@ ArrayList<GenericRow> combinedView;
 	            	}
 	            	dropdown.clearAnimation();
 	            	dropdown.setVisibility(View.GONE);
-	                  v1.setBackgroundColor(getResources().getColor(R.color.transparent));
+	                  v1.setBackground(null);
 	                  click++;
 	            }
 	            else if(lastview.getId()!=v1.getId()){
-	            	details.setText(holder.capabilities[id].consumes);
+	            	details.setText(InformationHolder.holder.capabilities[id].consumes);
 	            	dropdown.setVisibility(View.VISIBLE);
 	            	dropdown.startAnimation(animFadein);
-	            	details.setText(holder.capabilities[id].consumes);
+	            	details.setText(InformationHolder.holder.capabilities[id].consumes);
 	            
-	            	v1.setBackgroundColor(getResources().getColor(R.color.DarkGray));
-	            	lastview.setBackgroundColor(getResources().getColor(R.color.transparent));
+	            	v1.setBackgroundColor(getResources().getColor(R.color.yellow));
+	            	lastview.setBackground(null);
 	            	lastid=v1.getId();
 	            }
 
 	    }
 	            else{
-	            	details.setText(holder.capabilities[id].consumes);
+	            	details.setText(InformationHolder.holder.capabilities[id].consumes);
 	            	dropdown.setVisibility(View.VISIBLE);
 	            	dropdown.startAnimation(animFadein);
 	            	
-	            	v1.setBackgroundColor(getResources().getColor(R.color.DarkGray));
+	            	v1.setBackgroundColor(getResources().getColor(R.color.yellow));
 	            	lastid=v1.getId();
 	            }
 	        }
@@ -292,7 +319,7 @@ ArrayList<GenericRow> combinedView;
 	
 		
 		
-		Picasso.with(MainActivity.this).load(holder.imageURL).into(deviceImage);
+		Picasso.with(MainActivity.this).load(InformationHolder.holder.imageURL).into(deviceImage);
 		deviceDescription.setText(hol.description);
 		
 		
@@ -314,6 +341,7 @@ ArrayList<GenericRow> combinedView;
 		
 		for(int i=0 ;i<companies.size() ;i++){
 			ImageView im=new ImageView(this);
+			im.setPadding(2, 2, 2, 2);
 			im.setId(i+100);
 			im.setOnClickListener(companylistener);
 		LinearLayout.LayoutParams params=new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
@@ -359,37 +387,52 @@ ArrayList<GenericRow> combinedView;
 	}
 	
 	
+	
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {
+	    // Respond to the action bar's Up/Home button
+	    case R.id.help_bar:
+	        Intent i=new Intent(this, LegendActivity.class);
+	        startActivity(i);
+	        return true;
+	    
+	    case R.id.info_bar:
+	    	Helpers.alertDialog("About",  getResources().getString(R.string.about), this);
+	    }	
+	    return super.onOptionsItemSelected(item);
+	}
+
 				
 	public void setHolder(String response){
 		
 		if(response==null){
 		//	infoText.setText("This device was not recognized in our system.\nScan another tag.");
 				//TO DO -- REGISTER DEVICE BUTTON. - need deviceID and phoneID
-			
+			Toast.makeText(this, response, Toast.LENGTH_LONG).show();
 		}
 		else{
-		holder =new InformationHolder();
+		InformationHolder.holder =new InformationHolder();
 		try {
 			JSONObject root=new JSONObject(response);
 			JSONArray capabilities=root.getJSONArray("capabilities");
 			JSONArray features =root.getJSONArray("features");
-			holder.capabilities=getCapabilities(capabilities);
-			holder.qualities=getQualities(features);
-			holder.imageURL=root.getString("picture");
-			holder.owner=root.getString("owner");
-			holder.ownerURL=root.getString("ownerURL");
-			holder.manufacturer=root.getString("manufacturer");
-			holder.manufacturerURL=root.getString("manufacturerURL");
-			holder.description=root.getString("deviceDescription");
-			holder.deviceType=root.getString("deviceType");
-			holder.ownerLogo=root.getString("ownerLogo");
-			holder.manufacturerLogo=root.getString("manufacturerLogo");
+			InformationHolder.holder.capabilities=getCapabilities(capabilities);
+			InformationHolder.holder.qualities=getQualities(features);
+			InformationHolder.holder.imageURL=root.getString("picture");
+			InformationHolder.holder.owner=root.getString("owner");
+			InformationHolder.holder.ownerURL=root.getString("ownerURL");
+			InformationHolder.holder.manufacturer=root.getString("manufacturer");
+			InformationHolder.holder.manufacturerURL=root.getString("manufacturerURL");
+			InformationHolder.holder.description=root.getString("deviceDescription");
+			InformationHolder.holder.deviceType=root.getString("deviceType");
+			InformationHolder.holder.ownerLogo=root.getString("ownerLogo");
+			InformationHolder.holder.manufacturerLogo=root.getString("manufacturerLogo");
 			
-		//	responseText.setText(holder.toString());
+		//	responseText.setText(InformationHolder.holder.toString());
 		
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
-		//	infoText.setText("JSON ERROR in setholder() method");
+		//	infoText.setText("JSON ERROR in setInformationHolder.holder() method");
 			e.printStackTrace();
 		
 		}
@@ -449,20 +492,20 @@ public Capability[] getCapabilities(JSONArray capabilities){
 
 	@Override
 	protected Boolean doInBackground(String... params) {
-		
+	
 		 String urlRequest="http://t3.abdn.ac.uk:8080/t3/1/user/accept/"+params[0]+"/"+params[1];
 	    	HttpClient httpclient= new DefaultHttpClient();
 	    	HttpGet httpget = new HttpGet(urlRequest);
 	    	HttpResponse response;
 	    	try{
 	    		response =httpclient.execute(httpget);
-	    
-	    		if(response.getStatusLine().getStatusCode()==200){
+	    		Log.e("STATUS", response.getStatusLine().getStatusCode()+"");
+	    		if(response.getStatusLine().getStatusCode()==201){
 	    			
 	    			 return true;
 	    		}
 	    		else{
-	    			 Toast.makeText(getApplicationContext(), "Server Timeout????Device not added to your list" , Toast.LENGTH_LONG).show();
+	    		//	 Toast.makeText(getApplicationContext(), "Server Timeout????Device not added to your list" , Toast.LENGTH_LONG).show();
 	    			 return false;
 	    		}
 	    	}
@@ -472,7 +515,7 @@ public Capability[] getCapabilities(JSONArray capabilities){
 		return null;
 	}
 	protected void onPostExecute(Boolean b){
-	if(b){
+	if(b.booleanValue()){
 		 Toast.makeText(getApplicationContext(), "This IOT Device was succesfully added to your list of accepted devices" , Toast.LENGTH_LONG).show();
 		 Intent i= new Intent(Intent.ACTION_VIEW);
 		 i.setData(Uri.parse(URL));

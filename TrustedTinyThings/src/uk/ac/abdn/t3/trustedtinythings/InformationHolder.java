@@ -7,6 +7,8 @@ import uk.ac.abdn.t3.trustedtinythings.Quality;
 
 public class InformationHolder {
 
+	static InformationHolder holder=null;
+	
 String manufacturer;
 String manufacturerURL;
 String manufacturerLogo;

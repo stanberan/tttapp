@@ -13,7 +13,7 @@
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" >
-    <TextView
+    <uk.ac.abdn.t3.trustedtinythings.StyledTextView
         android:id="@+id/infoText"
         android:hint="This is a hint"
         android:layout_width="wrap_content"

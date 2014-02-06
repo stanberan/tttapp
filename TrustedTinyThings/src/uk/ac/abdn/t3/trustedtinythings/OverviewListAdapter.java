@@ -36,7 +36,7 @@ import android.widget.TextView;
 	        GenericRow item = getItem(position);
 	        if (item!= null) {
 	            // My layout has only one TextView
-	            TextView letterView = (TextView) view.findViewById(R.id.capital_letter_view);
+	            StyledTextView letterView = (StyledTextView) view.findViewById(R.id.capital_letter_view);
 	            if (letterView != null) {
 	                // do whatever you want with your string and long
 	            	String letter=item.getLetter();	            	
@@ -48,9 +48,9 @@ import android.widget.TextView;
 	                	letterView.setBackgroundColor(context.getResources().getColor(R.color.YellowGreen));
 	                }
 	            }
-	            TextView descriptionView=(TextView)view.findViewById(R.id.row_description);
+	            StyledTextView descriptionView=(StyledTextView)view.findViewById(R.id.row_description);
 	            descriptionView.setText(item.getDescription());
-	            TextView titleView=(TextView)view.findViewById(R.id.row_title);
+	            StyledTextView titleView=(StyledTextView)view.findViewById(R.id.row_title);
 	            titleView.setText(item.getTitle());
 	         }
 

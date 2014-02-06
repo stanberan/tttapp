@@ -9,12 +9,13 @@
      android:layout_margin="10dp"
      android:layout_marginBottom="10dp"
      			android:layout_height="50dp">
-  <TextView 
+  <uk.ac.abdn.t3.trustedtinythings.StyledTextView
       android:id="@+id/capital_letter_view"
       android:layout_width="fill_parent"
       android:layout_height="fill_parent"
       android:background="@color/red"
       android:textSize="30sp"
+      android:textStyle="bold"
       android:textColor="@color/white"
       android:layout_gravity="center"
       android:gravity="center"
@@ -22,32 +23,35 @@
       />  
       </LinearLayout>
       
-      <TextView 
+      <uk.ac.abdn.t3.trustedtinythings.StyledTextView
           android:id="@+id/row_title"
           android:layout_toRightOf="@id/cap"
           android:textStyle="bold"
-          android:textSize="15sp"
+          android:textSize="17sp"
           android:layout_alignTop="@id/cap"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:textColor="@color/white"
           android:text="Personal Data Consumption"
           />
-      <TextView 
+      <uk.ac.abdn.t3.trustedtinythings.StyledTextView
           android:id="@+id/row_description"
       	 android:layout_toRightOf="@id/cap"
       	 android:layout_below="@id/row_title"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:paddingRight="10dp"
           android:textColor="@color/white"
           android:text="This device is collecting your personal data"
     />
-      <ImageView 
-          android:layout_alignParentRight="true"
-          android:layout_centerVertical="true"
-     
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:background="@drawable/arrow"/>
+     <ImageView
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginLeft="10dp"
+         android:background="@drawable/arrow"
+         android:layout_alignParentRight="true"
+         android:layout_centerVertical="true"/>
+         
+         
 
 </RelativeLayout>

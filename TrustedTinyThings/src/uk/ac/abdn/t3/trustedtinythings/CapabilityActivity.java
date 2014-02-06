@@ -7,30 +7,33 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.app.Activity;
 import android.app.ListActivity;
+import android.content.Intent;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
-public class CapabilityActivity extends ListActivity {
-
+public class CapabilityActivity extends Activity {
+ListView listView=null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_capability);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		
+		listView=(ListView)findViewById(R.id.details_list);
 		Bundle extra=getIntent().getExtras();
 		Parcelable[] parcels=extra.getParcelableArray("uk.ac.abdn.t3.trustedtinythings.capabilities");
-		Capability[] capabilities=new Capability[parcels.length];
+		ArrayList<Capability>capabilities=new ArrayList<Capability>();
 	//	ArrayList<Capability> capab=(ArrayList<Capability>)Arrays.asList(capabilities);
 		for(int i=0; i<parcels.length;i++){
-			capabilities[i]=(Capability)parcels[i];
+			capabilities.add((Capability)parcels[i]);
 		}
 		
 		
-		ArrayAdapter<Capability> adapter = new ArrayAdapter<Capability>(this,
-		        android.R.layout.simple_list_item_1, capabilities);
-		    setListAdapter(adapter);
+		DetailsAdapter adapter = new DetailsAdapter(this,
+		        R.layout.details_capability_row, capabilities);
+		    listView.setAdapter(adapter);
 		
 		
 		
@@ -53,7 +56,15 @@ public class CapabilityActivity extends ListActivity {
 	    case android.R.id.home:
 	        NavUtils.navigateUpFromSameTask(this);
 	        return true;
-	    }
+	    
+	    case R.id.help_bar:
+	        Intent i=new Intent(this, LegendActivity.class);
+	        startActivity(i);
+	        return true;
+	    
+	    case R.id.info_bar:
+	    	Helpers.alertDialog("About", getResources().getString(R.string.about), this);
+	    }	
 	    return super.onOptionsItemSelected(item);
 	}
 

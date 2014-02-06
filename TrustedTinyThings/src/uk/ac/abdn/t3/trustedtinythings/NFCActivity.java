@@ -41,7 +41,7 @@ public class NFCActivity extends FragmentActivity {
 	String urlAction=null;
 	String uid;
 	SharedPreferences prefs;
-	
+	int busStop=0;
 	static boolean connected=true;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -131,13 +131,12 @@ public class NFCActivity extends FragmentActivity {
 				String u = ndefrecord.toUri().toString();
 				urlAction=u;
 				}
-				
+				//CHECK FOR BUSSTOP
 				if (urlAction.contains("deps.at")) {
-					MD5 = "MD5Hash";
-				} else {
-					MD5 = Helpers.getMD5(rawMessage, idTag);
-					
+					 busStop=1;
 				}
+					MD5 = Helpers.getMD5(rawMessage, idTag);
+				
 				
 				info = "URI" + urlAction+ "Size:"
 						+ ndefMessage.getRecords().length + "\nTYPE:" + type;
@@ -159,7 +158,8 @@ private class ServerResponse extends AsyncTask<String, String, String> {
 	
 	public boolean accepted(String deviceId){
 		final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-		 uid=tm.getDeviceId();	 	 
+		 uid=tm.getDeviceId();	 	
+		
 		 String urlRequest="http://t3.abdn.ac.uk:8080/t3/1/user/accepted/"+uid+"/"+deviceId;
 		 Log.e("UID:",uid+"   dev:"+deviceId);
 		HttpClient httpclient= new DefaultHttpClient();
@@ -233,13 +233,16 @@ private class DeviceExist extends AsyncTask<String, String, String> {
     @Override
     protected String doInBackground(String... params) {
     	publishProgress("Creating Http Client...");
-    	String urlRequest="http://t3.abdn.ac.uk:8080/t3/1/thing/"+params[0]+"/information";
+    	String urlRequest="http://t3.abdn.ac.uk:8080/t3/1/thing/"+params[0]+"/"+uid+"/information?busstop="+busStop;
     	HttpClient httpclient= Helpers.createHttpClient();
     	publishProgress("Http Client created...");
     	HttpGet httpget = new HttpGet(urlRequest);
+    	Log.d("busstop",""+ urlRequest);
+    	httpget.getParams().setParameter("busstop", ""+busStop);
     	//setCredentials(httpGet)
     	//addHeaders(httpGet)
     	httpget.addHeader("accept", "application/json");
+    	
     	
     	HttpResponse response;
     	try{
@@ -273,6 +276,7 @@ private class DeviceExist extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String result) {
     	if(result!=null){
+    		//Toast.makeText(NFCActivity.this, result, Toast.LENGTH_SHORT).show();
     Intent s=new Intent(NFCActivity.this, MainActivity.class);
     s.putExtra("response", result);
     s.putExtra("android_id", uid);
