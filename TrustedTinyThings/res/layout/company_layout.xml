@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+ 
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp" />
+ 
+    <uk.ac.abdn.t3.trustedtinythings.StyledTextView
+        android:id="@+id/address"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+   
+        android:layout_toRightOf="@+id/image"/>
+ 
+        <uk.ac.abdn.t3.trustedtinythings.StyledTextView
+        android:id="@+id/email"
+        android:autoLink="email"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+      
+        android:layout_below="@+id/address"/>
+     
+        <uk.ac.abdn.t3.trustedtinythings.StyledTextView
+        android:id="@+id/url"
+        android:layout_width="fill_parent"
+        android:autoLink="web"
+        android:layout_height="wrap_content"
+      
+        android:layout_below="@id/email"/>
+     
+       <uk.ac.abdn.t3.trustedtinythings.StyledTextView
+        android:id="@+id/phone"
+        android:layout_width="fill_parent"
+        android:autoLink="phone"
+        android:layout_height="wrap_content"
+        
+        android:layout_below="@id/url"/>
+     
+     
+</RelativeLayout>
