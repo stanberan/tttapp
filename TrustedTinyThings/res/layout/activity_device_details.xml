@@ -13,6 +13,21 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".DeviceDetailsActivity" >
 
+    
+         
+       <uk.ac.abdn.t3.trustedtinythings.StyledTextView
+            android:layout_weight="1"
+                android:id="@+id/details_thing_name"
+                  android:background="@drawable/search_bg_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+          android:gravity="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        
+        />
+    
+    
    <LinearLayout android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -22,7 +37,8 @@
          android:divider="@drawable/mydivider"
         android:showDividers="middle"
         android:dividerPadding="22dp">
-        
+   
+       
         <uk.ac.abdn.t3.trustedtinythings.StyledTextView
             android:layout_weight="1"
                 android:id="@+id/details_device_description"
@@ -30,8 +46,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
           android:gravity="center"
-        android:textSize="15sp"
-        android:textStyle="bold"
+        android:textSize="16sp"
+       
       
         />
     
@@ -71,7 +87,7 @@
          
           android:gravity="center"
         android:textSize="15sp"
-        android:textStyle="bold"
+       
       
         />
      <ImageView
@@ -111,7 +127,7 @@
           android:gravity="center_vertical"
           android:layout_gravity="center_vertical"
         android:textSize="15sp"
-        android:textStyle="bold"
+     
       
         />
      <ImageView

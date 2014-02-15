@@ -30,8 +30,8 @@
             android:gravity="center_vertical"
             android:text="No description"
             android:textColor="@color/GhostWhite"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:textSize="16sp"
+           />
     </LinearLayout>
 
     <RelativeLayout
@@ -84,19 +84,20 @@
         android:visibility="gone" >
 
 <ImageView android:id="@+id/details_imageview"
-     android:layout_width="150dp"
-    android:layout_height="wrap_content"
+     android:layout_width="100dp"
+    android:layout_height="100dp"
     android:layout_gravity="center_vertical"
     />
 
 <uk.ac.abdn.t3.trustedtinythings.StyledTextView
     android:id="@+id/details_textview"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
     android:layout_marginLeft="5dp"
     android:layout_marginRight="5dp"
     android:textSize="15sp"
-    android:textStyle="bold"
+    
    
   
     />
@@ -115,8 +116,20 @@
 
 
     <include
+        android:id="@+id/accept_cancel_include"
 	android:layout_weight="5"
         android:layout_gravity="bottom"
         layout="@layout/acceptcancel_view" />
-
+    
+    <uk.ac.abdn.t3.trustedtinythings.StyledButton
+           android:id="@+id/delete_button"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"    
+    			android:layout_margin="5dp"
+                android:text="Delete this device"
+                android:background="@color/red"
+                android:textColor="@color/Ivory"
+                android:textSize="20sp"
+                android:visibility="gone"/>
 </uk.ac.abdn.t3.trustedtinythings.CustomLayout>

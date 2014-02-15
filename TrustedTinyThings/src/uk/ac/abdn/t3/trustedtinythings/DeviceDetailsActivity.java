@@ -18,6 +18,7 @@ ImageView device_details_manufacturer_image;
 StyledTextView device_owner_title;
 ImageView device_owner_image;
 StyledTextView device_type;
+StyledTextView thing_name;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -30,7 +31,7 @@ StyledTextView device_type;
 		device_owner_title=(StyledTextView)findViewById(R.id.details_device_owner_title);
 		device_owner_image=(ImageView)findViewById(R.id.details_device_owner_image_view);
 		device_type=(StyledTextView) findViewById(R.id.details_device_type);
-		
+		thing_name=(StyledTextView) findViewById(R.id.details_thing_name);
 		
 		populateView();
 		
@@ -41,15 +42,15 @@ StyledTextView device_type;
 	}
 	public void populateView(){
 		
-		Picasso.with(this).load(InformationHolder.holder.manufacturerLogo).resize(200,200).into(device_details_manufacturer_image);
-		Picasso.with(this).load(InformationHolder.holder.ownerLogo).resize(200,200).into(device_owner_image);
+		Picasso.with(this).load(InformationHolder.holder.manufacturerLogo).into(device_details_manufacturer_image);
+		Picasso.with(this).load(InformationHolder.holder.ownerLogo).into(device_owner_image);
 		Picasso.with(this).load(InformationHolder.holder.imageURL).into(deviceImage);
 		
 		device_description.setText(InformationHolder.holder.description);
 		device_manufacturer_title.setText(InformationHolder.holder.manufacturer);
 		device_owner_title.setText(InformationHolder.holder.owner);
 		device_type.setText(InformationHolder.holder.deviceType);
-		
+		thing_name.setText(InformationHolder.holder.thingName);
 		
 		
 	}

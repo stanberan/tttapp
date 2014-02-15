@@ -16,7 +16,7 @@
       android:textColor="@color/white"
      
       android:gravity="center"
-      android:text="WHO?"/>
+      android:text="Who?"/>
     
     <LinearLayout android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
           android:gravity="center_vertical"
           android:layout_gravity="center_vertical"
         android:textSize="15sp"
-        android:textStyle="bold"
+         android:layout_marginLeft="5dp"
         
         android:text="Region Services Limited"
         />
@@ -58,7 +58,7 @@
       android:textColor="@color/white"
       android:layout_gravity="center"
       android:gravity="center"
-      android:text="WHY?"/>
+      android:text="Why?"/>
       
       
         <uk.ac.abdn.t3.trustedtinythings.StyledTextView
@@ -71,7 +71,8 @@
       android:textColor="@color/white"
       android:layout_gravity="center"
       android:gravity="center"
-      android:text="WHAT?"/>
+     
+      android:text="What?"/>
 
       <uk.ac.abdn.t3.trustedtinythings.StyledTextView
           android:id="@+id/why_name"
@@ -81,10 +82,10 @@
           android:layout_alignTop="@id/why"
           android:layout_toRightOf="@id/why"
           android:gravity="center_vertical"
-         
+          android:layout_marginLeft="5dp"
           android:text="Statistical Purposes"
           android:textSize="15sp"
-          android:textStyle="bold" />
+          />
 
       <uk.ac.abdn.t3.trustedtinythings.StyledTextView
           android:id="@+id/what_name"
@@ -96,8 +97,9 @@
           android:gravity="center_vertical"
           android:layout_gravity="center_vertical"
           android:text="IP Address of the Smartphone"
+            android:layout_marginLeft="5dp"
           android:textSize="15sp"
-          android:textStyle="bold" />
+          />
 
      
 

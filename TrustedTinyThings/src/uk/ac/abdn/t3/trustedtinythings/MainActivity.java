@@ -2,11 +2,15 @@ package uk.ac.abdn.t3.trustedtinythings;
 
 
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -16,6 +20,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.abdn.t3.trustedtinythings.OverviewListAdapter.GenericRow;
+import ws.GetTask;
+import ws.RestTaskCallback;
 
 import com.squareup.picasso.Picasso;
 
@@ -29,12 +35,15 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
+import android.text.Editable;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,6 +54,7 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -74,11 +84,14 @@ Animation animFadein;
 ImageView logodetails;
 LinearLayout dropdown;
 LinearLayout overviewDetailsLayout;
+View buttons;
+StyledButton delete;
 
 static String  android_id=null;
 static String  MD5=null;
 static String URL=null;
 
+static boolean accepted;    //not from nfc but list
 ArrayList<GenericRow> combinedView;
 
 	@Override
@@ -86,6 +99,7 @@ ArrayList<GenericRow> combinedView;
 		super.onCreate(savedInstanceState);
 	
 		setContentView(R.layout.overview_frag);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		combinedView=new ArrayList<GenericRow>();
 		responseText=(TextView)findViewById(R.id.responseText);
 		infoText=(TextView)findViewById(R.id.infoText);		
@@ -117,7 +131,85 @@ ArrayList<GenericRow> combinedView;
 		collectedData=(LinearLayout)findViewById(R.id.data_collected_view);
 		details=(StyledTextView)findViewById(R.id.details_textview);
 		logodetails=(ImageView)findViewById(R.id.details_imageview);
-	
+		buttons=(View)findViewById(R.id.accept_cancel_include);
+		delete=(StyledButton)findViewById(R.id.delete_button);
+		
+		logodetails.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				String url="";
+				try {
+					url = "http://t3.abdn.ac.uk:8080/t3/1/thing/company/"+URLEncoder.encode(details.getText().toString(), "UTF-8");
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				new GetTask(url, new RestTaskCallback(){
+				
+					@Override
+					public void onTaskComplete(String result) {
+						Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
+						showCompanyDialog(result,details.getText().toString());
+					
+					}
+
+					@Override
+					public void onFailure(String message) {
+						Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+				
+						
+					}
+					
+				}).execute();
+				
+		
+				
+				
+			}
+			
+			
+			
+		});
+		
+		
+		
+		
+		
+		delete.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				String url="http://t3.abdn.ac.uk:8080/t3/1/user/remove/"+android_id+"/"+MD5;
+				
+				new GetTask(url, new RestTaskCallback(){
+
+					@Override
+					public void onTaskComplete(String result) {
+						Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
+						finish();
+					}
+
+					@Override
+					public void onFailure(String message) {
+						Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+						finish();
+						
+					}
+					
+				}).execute();
+				
+				
+				
+				
+				
+				
+			}
+			
+			
+		});
+		
 		
 		overviewDetailsLayout.setOnClickListener(new OnClickListener(){
 
@@ -125,7 +217,8 @@ ArrayList<GenericRow> combinedView;
 			public void onClick(View v) {
 				Intent i =new Intent(MainActivity.this, DeviceDetailsActivity.class);
 				startActivity(i);
-				
+				//stats
+				new TrackStats().execute(new String[]{android_id,"From Overview -> To Device Details "});
 			}
 			
 			
@@ -146,8 +239,10 @@ ArrayList<GenericRow> combinedView;
 			
 			@Override
 			public void onClick(View v) {
-				 Toast.makeText(getApplicationContext(),"Device id : "+android_id +"Iot ID:"+MD5, Toast.LENGTH_LONG).show();
-				new AcceptResponse().execute(new String[]{android_id,MD5,URL});
+				// Toast.makeText(getApplicationContext(),"Device id : "+android_id +"Iot ID:"+MD5, Toast.LENGTH_LONG).show();
+				
+			
+			setNickName(1); //default first case - recursive
 				
 			}
 			
@@ -159,6 +254,7 @@ ArrayList<GenericRow> combinedView;
 			@Override
 			public void onClick(View v) {
 				Toast.makeText(MainActivity.this,"Exiting app and canceling forwarding to service",Toast.LENGTH_LONG).show();
+				new TrackStats().execute(new String[]{android_id,"User Declined Device:"+InformationHolder.holder.thingName+" with iotid:"+MD5});
 				finish();
 				
 			}
@@ -173,6 +269,14 @@ ArrayList<GenericRow> combinedView;
 			String response=extra.getString("response");
 			
 		if(response!=null){
+			if(extra.getBoolean("accept")){
+				accepted=true;
+			accept.setVisibility(View.GONE);
+			cancel.setVisibility(View.GONE);
+			delete.setVisibility(View.VISIBLE);
+			
+			}
+		
 		android_id=extra.getString("android_id");
 		URL=extra.getString("URL");
 		MD5=extra.getString("MD5");
@@ -183,6 +287,11 @@ ArrayList<GenericRow> combinedView;
 		
 		}
 		else{
+			if(accepted==true){
+				accept.setVisibility(View.GONE);
+				cancel.setVisibility(View.GONE);
+				delete.setVisibility(View.VISIBLE);
+			}
 			populateView(InformationHolder.holder);
 		//	Toast.makeText(this, "Something went wrong with NFC Activity!", Toast.LENGTH_LONG).show();
 		}
@@ -209,7 +318,7 @@ ArrayList<GenericRow> combinedView;
 	
 	private void populateView(final InformationHolder hol){
 		
-		
+		//TODO populateView in MainActivity retrieve involved companies with REST API
 		ArrayList<Company> companies=new ArrayList<Company>();
 		Company c=new Company();
 		c.logo=hol.ownerLogo;
@@ -250,12 +359,15 @@ ArrayList<GenericRow> combinedView;
 	            else if(lastview.getId()!=v1.getId()){
 	            	Picasso.with(MainActivity.this).load(InformationHolder.holder.companies[id-100].logo).into(logodetails);
 	            	details.setText(InformationHolder.holder.companies[id-100].name);
+	     
 	            	dropdown.setVisibility(View.VISIBLE);
 	            	dropdown.startAnimation(animFadein);	
 	            	
 	            	v1.setBackgroundColor(getResources().getColor(R.color.yellow));
 	            	lastview.setBackground(null);
 	            	lastid=v1.getId();
+	            	//Statistic hook
+	            	new TrackStats().execute(new String[]{android_id,"Clicked on company->"+InformationHolder.holder.companies[id-100].name});
 	            }
 
 	    }
@@ -266,6 +378,8 @@ ArrayList<GenericRow> combinedView;
 
 	            	v1.setBackgroundColor(getResources().getColor(R.color.yellow));
 	            	lastid=v1.getId();
+	            	//stats
+	            	new TrackStats().execute(new String[]{android_id,"Clicked on company->"+InformationHolder.holder.companies[id-100].name});
 	            }
 	        }
 		};
@@ -302,6 +416,8 @@ ArrayList<GenericRow> combinedView;
 	            	v1.setBackgroundColor(getResources().getColor(R.color.yellow));
 	            	lastview.setBackground(null);
 	            	lastid=v1.getId();
+	            	//stats hook
+	            	new TrackStats().execute(new String[]{android_id,"Clicked on data->"+InformationHolder.holder.capabilities[id].consumes});
 	            }
 
 	    }
@@ -312,6 +428,8 @@ ArrayList<GenericRow> combinedView;
 	            	
 	            	v1.setBackgroundColor(getResources().getColor(R.color.yellow));
 	            	lastid=v1.getId();
+	            	//Stats hook
+	            	new TrackStats().execute(new String[]{android_id,"Clicked on data->"+InformationHolder.holder.capabilities[id].consumes});
 	            }
 	        }
 		};
@@ -375,6 +493,14 @@ ArrayList<GenericRow> combinedView;
 	    	   Intent i=new Intent(MainActivity.this,CapabilityActivity.class);	
 	    	   i.putExtra("uk.ac.abdn.t3.trustedtinythings.capabilities",hol.capabilities);
 	    	   startActivity(i);
+	    	   new TrackStats().execute(new String[]{android_id,"From Overview Screen clicked on Capability:"+cap.getName()});
+	    	   
+	       }
+	       else if(row instanceof Quality){
+	    	   Quality q=(Quality)row;
+	    	   //TODO Quality enhancement title type 
+	    	   new TrackStats().execute(new String[]{android_id,"From Overview Screen clicked on Quality:"+q.description});
+	    	   Toast.makeText(getBaseContext(),"I am sorry.\nNo more information about this Quality.",Toast.LENGTH_LONG).show();
 	    	   
 	       }
 	       
@@ -398,7 +524,14 @@ ArrayList<GenericRow> combinedView;
 	    
 	    case R.id.info_bar:
 	    	Helpers.alertDialog("About",  getResources().getString(R.string.about), this);
+	    	 	
+	    case android.R.id.home:
+	        NavUtils.navigateUpFromSameTask(this);
+	        return true;
 	    }	
+	    
+	    
+	    
 	    return super.onOptionsItemSelected(item);
 	}
 
@@ -419,6 +552,7 @@ ArrayList<GenericRow> combinedView;
 			InformationHolder.holder.capabilities=getCapabilities(capabilities);
 			InformationHolder.holder.qualities=getQualities(features);
 			InformationHolder.holder.imageURL=root.getString("picture");
+			InformationHolder.holder.thingName=root.getString("thingName");
 			InformationHolder.holder.owner=root.getString("owner");
 			InformationHolder.holder.ownerURL=root.getString("ownerURL");
 			InformationHolder.holder.manufacturer=root.getString("manufacturer");
@@ -493,11 +627,12 @@ public Capability[] getCapabilities(JSONArray capabilities){
 	@Override
 	protected Boolean doInBackground(String... params) {
 	
-		 String urlRequest="http://t3.abdn.ac.uk:8080/t3/1/user/accept/"+params[0]+"/"+params[1];
-	    	HttpClient httpclient= new DefaultHttpClient();
-	    	HttpGet httpget = new HttpGet(urlRequest);
-	    	HttpResponse response;
+		
 	    	try{
+	    		 String urlRequest="http://t3.abdn.ac.uk:8080/t3/1/user/accept/"+params[0]+"/"+params[1]+"/"+URLEncoder.encode(params[3],"UTF-8");
+	 	    	HttpClient httpclient= new DefaultHttpClient();
+	 	    	HttpGet httpget = new HttpGet(urlRequest);
+	 	    	HttpResponse response;
 	    		response =httpclient.execute(httpget);
 	    		Log.e("STATUS", response.getStatusLine().getStatusCode()+"");
 	    		if(response.getStatusLine().getStatusCode()==201){
@@ -535,6 +670,209 @@ public Capability[] getCapabilities(JSONArray capabilities){
  }
  
 
+ private class CheckNickName extends AsyncTask<String, Integer, Integer> {
+
+	 
+	 
+	 
+	 
+	@Override
+	protected Integer doInBackground(String... params) {
+		if(params[1].equals("generate")){
+			boolean added=false;
+			int dev=1;
+			while(!added){			
+				Uri.Builder b = Uri.parse("http://t3.abdn.ac.uk:8080").buildUpon().
+						
+						appendPath("t3").appendPath("1").appendPath("user").appendPath("checknick").appendPath(params[0]).appendPath("device"+dev);	
+				
+				try{
+					  
+			    	HttpClient httpclient= new DefaultHttpClient();
+			    	HttpGet httpget = new HttpGet(b.build().toString());
+			    	HttpResponse response;
+
+		    		response =httpclient.execute(httpget);
+		    		if(response.getStatusLine().getStatusCode()==215){
+		    		//
+		    		}
+		    		else if(response.getStatusLine().getStatusCode()==200){
+		    			
+		    			added=true;
+		    			new AcceptResponse().execute(new  String[]{android_id,MD5,URL,"device"+dev});
+		    			return 6;
+		    		}
+			
+			dev++;
+		}
+			catch(Exception e){
+				e.printStackTrace();
+				//added=true;
+    			//new AcceptResponse().execute(new  String[]{android_id,MD5,URL,"device"+dev});
+    			dev++;
+			}
+		
+			}
+	
+		}
+		
+	
+		
+		try{
+			Uri.Builder b = Uri.parse("http://t3.abdn.ac.uk:8080").buildUpon().
+					
+					appendPath("t3").appendPath("1").appendPath("user").appendPath("checknick").appendPath(params[0]).appendPath(URLEncoder.encode(params[1], "UTF-8"));
+	  
+		    	HttpClient httpclient= new DefaultHttpClient();
+		    	HttpGet httpget = new HttpGet(b.build().toString());
+		    	HttpResponse response;
+
+	    		response =httpclient.execute(httpget);
+	    		if(response.getStatusLine().getStatusCode()==215){
+	    		
+	    			return 2;    //already exist
+	    		}
+	    		else if(response.getStatusLine().getStatusCode()==200){
+	    			new AcceptResponse().execute(new String[]{android_id,MD5,URL,params[1]}); //TODO referencing static variables when accpeting
+	    			return 0;   //does not exist create
+	    		}
+		return null;
+		
+		
+	}
+		catch(Exception e){
+			e.printStackTrace();
+			return 2;
+		}
+		
+	}
+		public void onPostExecute(Integer response){
+			if(response!=null){
+				if(response==6){
+					Toast.makeText(MainActivity.this, "Nick name generated and saved", Toast.LENGTH_LONG).show();
+				}
+				else if(response==2){
+					setNickName(2);
+				}
+				else if (response==-1){
+					Toast.makeText(MainActivity.this, "Exception!", Toast.LENGTH_LONG).show();
+				}
+				
+				
+				
+				
+				
+				
+				
+				
+			}
+		}
+	 
+	 
+	 
+ }
+ private class TrackStats extends AsyncTask<String, Boolean, Boolean> {
+
+	@Override
+	protected Boolean doInBackground(String... params) {
+		Uri.Builder b = Uri.parse("http://t3.abdn.ac.uk:8080").buildUpon().
+	
+		appendPath("t3").appendPath("1").appendPath("user").appendPath("track").appendPath(params[0]).appendPath(params[1]);
+
+		String myUrl = b.build().toString();
+		Log.e("HTTP", myUrl );
+	    	try{
+	    	//	URI uri =new URI("http","t3.abdn.ac.uk",null,8080,"/t3/1/user/track/"+params[0]+"/"+params[1],null);
+	    	//	java.net.URL url=uri.toURL();
+	    	//	String urlRequest= uri.toASCIIString();   //"http://t3.abdn.ac.uk:8080/t3/1/user/track/"+params[0]+"/"+params[1];
+		    	HttpClient httpclient= new DefaultHttpClient();
+		    	HttpGet httpget = new HttpGet(myUrl);
+		    	HttpResponse response;
+	    		
+	    		
+	    		response =httpclient.execute(httpget);
+	    		Log.e("STATUS", response.getStatusLine().getStatusCode()+"");    	
+	    	}
+	    	catch(Exception e){
+	    		e.printStackTrace();
+	    	}
+		return null;
+	}
+	 
+	 
+	 
+ }
+ 
+ public void setNickName(int response){
+	
+	String message="Please provide a nickname for this device, so you can reference it in the future. If canceled nickname will be provided automatically.";
+	if (response ==2){
+		message="This nick name already exist, please choose a new one.";
+	}
+	if (response ==3){
+		message="Cannot cannot be empty";
+	}
+	
+	
+	final EditText input = new EditText(MainActivity.this);
+	 
+	 new AlertDialog.Builder(MainActivity.this) 
+	    .setTitle("Create NickName")
+	    .setMessage(message) //TODO string message for nickname promtp dialog
+	    .setView(input)
+	    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int whichButton) {
+	           String text=input.getText().toString();
+	           if (text!=null && !text.equals("")){
+	            new CheckNickName().execute(new String[]{android_id,text});
+	           }
+	           else{
+	        	   setNickName(3);
+	           }
+	        }
+	    }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int whichButton) {	          
+	        	new CheckNickName().execute(new String[]{android_id,"generate"});
+	        	
+	        }
+	    }).show();
+	 
+	 
+	 
+	 
+	 
+ }
+ 
+ public void showCompanyDialog(String result,String title){
+	 try{
+	 JSONObject res= new JSONObject(result);
+	 final Dialog dialog = new Dialog(this);
+		dialog.setContentView(R.layout.company_layout);
+		dialog.setTitle(title);
+
+
+		TextView address = (TextView) dialog.findViewById(R.id.address);
+		address.setText(res.getString("address"));
+		TextView email=(TextView)dialog.findViewById(R.id.email);
+		email.setText(res.getString("email"));
+		TextView url=(TextView)dialog.findViewById(R.id.url);
+		url.setText(res.getString("url"));
+		TextView phone=(TextView)dialog.findViewById(R.id.phone);
+		phone.setText(res.getString("telNumber"));
+		ImageView image = (ImageView) dialog.findViewById(R.id.image);
+		Picasso.with(MainActivity.this).load(res.getString("logo")).into(image);
+		
+	 dialog.show();
+	 }
+	 catch(Exception e){
+		 Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+	 }
+	 
+	 
+	 
+ }
+ 
+ 
 
 
 	@Override

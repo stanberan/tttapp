@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><uk.ac.abdn.t3.trustedtinythings.CustomRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -7,27 +6,7 @@
 
   
 
-            <uk.ac.abdn.t3.trustedtinythings.StyledTextView
-                android:id="@+id/scan_a_tag_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/search_bg_shadow"
-                android:layout_centerInParent="true"
-                android:gravity="center"
-                android:text="@string/scan"
-             
-                android:textSize="20sp" />
           
-            <ImageView 
-        android:id="@+id/scan_a_tag_image"
-         
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_centerHorizontal="true"
-        android:layout_above="@id/scan_a_tag_view"
-     
-        android:src="@drawable/logo_blue"
-        />
              <ProgressBar
     android:id="@+id/progressBar1"
     style="?android:attr/progressBarStyleLarge"
@@ -39,20 +18,24 @@
     android:visibility="invisible"
   
     />
-            
-       <!--      
-	<include layout="@layout/acceptcancel_view"/>           
-            <uk.ac.abdn.t3.trustedtinythings.StyledTextView
-                android:id="@+id/info_view"
+        
+            <TextView 
+                android:id="@+id/catalogue_progress"
                 android:layout_width="match_parent"
+                android:layout_centerHorizontal="true"
+               android:background="@drawable/search_bg_shadow"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_below="@id/scan_a_tag_view"
                 android:gravity="center"
-                android:text="@string/scan"
-                android:textColor="@color/red"
-                android:textSize="15sp" />
-                
---> 
+                android:layout_below="@+id/catalogue_list_view"
+                android:text="No Devices Have Been Found"/>
+      <ListView 
+          android:id="@id/catalogue_list_view"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          />
+          
+             
+        
+     
 
-    </RelativeLayout>
+    </uk.ac.abdn.t3.trustedtinythings.CustomRelativeLayout>

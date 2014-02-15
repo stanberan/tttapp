@@ -18,6 +18,8 @@ String ownerURL;
 String description;
 String deviceType;
 String imageURL;
+String thingName;
+
 
 Company[]companies;
 DeviceData[] data;

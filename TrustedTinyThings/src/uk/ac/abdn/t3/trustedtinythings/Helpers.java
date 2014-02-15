@@ -23,14 +23,14 @@ import android.content.DialogInterface;
 public class Helpers {
 
 	public static DefaultHttpClient createHttpClient() { 
-		final int TIMEOUT=15;
+		final int TIMEOUT=30;
 		final SchemeRegistry supportedSchemes = new SchemeRegistry();
 		supportedSchemes.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80)); 
 	//	supportedSchemes.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443)); 
 		final HttpParams params = new BasicHttpParams(); HttpConnectionParams.setConnectionTimeout(params, TIMEOUT * 1000);
 		HttpConnectionParams.setSoTimeout(params, TIMEOUT * 1000); 
 		HttpConnectionParams.setSocketBufferSize(params, 8192);
-		HttpClientParams.setRedirecting(params, false); 
+		HttpClientParams.setRedirecting(params, true); 
 		final ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, supportedSchemes); 
 		return new DefaultHttpClient(ccm, params);}
 	

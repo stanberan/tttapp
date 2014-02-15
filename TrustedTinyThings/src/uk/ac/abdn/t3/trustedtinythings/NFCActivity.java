@@ -1,5 +1,7 @@
 package uk.ac.abdn.t3.trustedtinythings;
 
+import java.util.List;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -7,6 +9,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import ws.GenericListResponse;
+import ws.GetResponseCallback;
+import ws.RestUtils;
 import android.net.Uri;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
@@ -27,9 +32,15 @@ import android.content.SharedPreferences;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.telephony.TelephonyManager;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class NFCActivity extends FragmentActivity {
@@ -56,8 +67,13 @@ public class NFCActivity extends FragmentActivity {
 		
 */
 	
-	
+	getActionBar().hide();
 		setContentView(R.layout.scan_activity);
+		final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
+		 uid=tm.getDeviceId();	 
+		
+		
+		
 		scan=(ScanATagFragment)getSupportFragmentManager().findFragmentById(R.id.scan_a_tag);
 		prefs= PreferenceManager.getDefaultSharedPreferences(this);
 		if(!prefs.getBoolean("EULA_ACCEPTED", false)) {
@@ -66,6 +82,9 @@ public class NFCActivity extends FragmentActivity {
 		  
 		}
 		else{
+			
+			
+			
 		handleIntent(getIntent());
 		
 		}
@@ -157,8 +176,7 @@ private class ServerResponse extends AsyncTask<String, String, String> {
 		
 	
 	public boolean accepted(String deviceId){
-		final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-		 uid=tm.getDeviceId();	 	
+		
 		
 		 String urlRequest="http://t3.abdn.ac.uk:8080/t3/1/user/accepted/"+uid+"/"+deviceId;
 		 Log.e("UID:",uid+"   dev:"+deviceId);
@@ -168,6 +186,7 @@ private class ServerResponse extends AsyncTask<String, String, String> {
 	try{
 		response =httpclient.execute(httpget);
 		HttpEntity entity= response.getEntity();
+		
 		if(response.getStatusLine().getStatusCode()==200){
 			return true;
 		}
@@ -210,6 +229,7 @@ private class ServerResponse extends AsyncTask<String, String, String> {
         		i.setData(Uri.parse(urlAction));
         		scan.setProgress(false);
         		startActivity(i);
+        		Toast.makeText(getApplicationContext(), "This device is trusted by you! Redirecting...", Toast.LENGTH_LONG).show();
         		//end our application
         		
         		finish();
@@ -278,6 +298,7 @@ private class DeviceExist extends AsyncTask<String, String, String> {
     	if(result!=null){
     		//Toast.makeText(NFCActivity.this, result, Toast.LENGTH_SHORT).show();
     Intent s=new Intent(NFCActivity.this, MainActivity.class);
+    getActionBar().hide();
     s.putExtra("response", result);
     s.putExtra("android_id", uid);
     s.putExtra("MD5", MD5);
@@ -341,13 +362,18 @@ public  void alertDialog(String title, String message, Context c){
  public void showEula(){
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
 				this);
+String raw=getResources().getText(R.string.terms_conditions).toString();
 
+		final SpannableString s = 
+	               new SpannableString(raw);
+	  Linkify.addLinks(s, Linkify.WEB_URLS);
+		
 			// set title
 			alertDialogBuilder.setTitle("Terms & Conditions");
 
 			// set dialog message
 			alertDialogBuilder
-				.setMessage(R.string.terms_conditions)
+				.setMessage(s)
 				.setCancelable(false)
 				.setPositiveButton("I Agree to terms and conditions",new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog,int id) {
@@ -365,8 +391,11 @@ public  void alertDialog(String title, String message, Context c){
 
 				// create alert dialog
 				AlertDialog alertDialog = alertDialogBuilder.create();
+				
+			
 				// show it
 				alertDialog.show();
+				((TextView)alertDialog.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
 			}
 	 
 	 
