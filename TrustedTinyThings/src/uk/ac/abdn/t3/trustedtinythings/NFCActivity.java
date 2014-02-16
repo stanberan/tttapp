@@ -1,5 +1,10 @@
 package uk.ac.abdn.t3.trustedtinythings;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -8,6 +13,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import ws.GenericListResponse;
 import ws.GetResponseCallback;
@@ -57,15 +63,15 @@ public class NFCActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-/*
+
 		if (!NfcAdapter.getDefaultAdapter(this).isEnabled()) {
 			Toast.makeText(getApplicationContext(),
-					"Please Enable NFC before using this app",
+					"Please, Enable NFC in your Settings before using this app.",
 					Toast.LENGTH_LONG).show();
 			finish();
 		}
 		
-*/
+
 	
 	getActionBar().hide();
 		setContentView(R.layout.scan_activity);
@@ -173,9 +179,9 @@ private class ServerResponse extends AsyncTask<String, String, String> {
 
 		
 		
-		
 	
-	public boolean accepted(String deviceId){
+	
+	public String accepted(String deviceId){
 		
 		
 		 String urlRequest="http://t3.abdn.ac.uk:8080/t3/1/user/accepted/"+uid+"/"+deviceId;
@@ -188,13 +194,23 @@ private class ServerResponse extends AsyncTask<String, String, String> {
 		HttpEntity entity= response.getEntity();
 		
 		if(response.getStatusLine().getStatusCode()==200){
-			return true;
+			String answer =EntityUtils.toString(entity);
+			JSONObject root=new JSONObject(answer);
+			String time=root.getString("accepted");
+			
+			return time;
+			
+			
+			
+			
 		}
 	}
 	catch(Exception e){
 		e.printStackTrace();
+		
 	}
-		return false;
+	Helpers.loading(false, NFCActivity.this, "Retrieving device data...");
+		return null;
 	}
 	
 	
@@ -206,9 +222,9 @@ private class ServerResponse extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {
        
-        		boolean accepted=accepted(params[0]);
-        		if(accepted){
-        			return "1";
+        		String accepted=accepted(params[0]);
+        		if(accepted!=null){
+        			return accepted;
         		}
         		else{
         			return null;
@@ -229,13 +245,25 @@ private class ServerResponse extends AsyncTask<String, String, String> {
         		i.setData(Uri.parse(urlAction));
         		scan.setProgress(false);
         		startActivity(i);
-        		Toast.makeText(getApplicationContext(), "This device is trusted by you! Redirecting...", Toast.LENGTH_LONG).show();
-        		//end our application
         		
+        		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+        	    try {
+					Date parsedDate = dateFormat.parse(result);
+					Calendar myCal = new GregorianCalendar();
+					myCal.setTime(parsedDate);
+					Toast.makeText(getApplicationContext(), "You trusted this device on "+parsedDate,Toast.LENGTH_LONG).show();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        		
+        		
+        		//end our application
+        		//TODO TIME WHEN TRUSTED
         		finish();
         	}
         	else{
- 
+        		Helpers.loading(true, NFCActivity.this, "Retrieving device data...");
         		new DeviceExist().execute(new String[]{MD5});
         		
         	}
@@ -295,6 +323,7 @@ private class DeviceExist extends AsyncTask<String, String, String> {
 
     @Override
     protected void onPostExecute(String result) {
+    	Helpers.loading(false, NFCActivity.this, "Retrieving device data...");
     	if(result!=null){
     		//Toast.makeText(NFCActivity.this, result, Toast.LENGTH_SHORT).show();
     Intent s=new Intent(NFCActivity.this, MainActivity.class);
@@ -311,10 +340,11 @@ private class DeviceExist extends AsyncTask<String, String, String> {
     	else{
     		scan.setProgress(false);
     		if(connected){
-    		alertDialog("WARNING!","I am sorry, but this device was not recognized in our system.\n Would you still like to execute its content?",NFCActivity.this);
+    			Helpers.loading(false, NFCActivity.this, "Retrieving device data...");
+    		alertDialog("Not Recognized!","I am sorry, but this device has not been recognized in our Trusted Tiny Things service.\n Would you like to proceed?",NFCActivity.this);
     	}
     		else{
-    			Toast.makeText(NFCActivity.this, "Seems there is an issue with your internet connection",Toast.LENGTH_LONG).show();
+    			Toast.makeText(NFCActivity.this, " It seems there is an issue with your internet connection",Toast.LENGTH_LONG).show();
     		}
     	
     	
@@ -349,6 +379,7 @@ public  void alertDialog(String title, String message, Context c){
 					public void onClick(DialogInterface dialog,int id) {
 						// if this button is clicked, just close
 						// the dialog box and do nothing
+						Helpers.loading(false, NFCActivity.this, null);
 						dialog.cancel();
 					}
 				})

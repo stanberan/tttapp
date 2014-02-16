@@ -10,4 +10,6 @@ public abstract class RestTaskCallback{
     
     public abstract void onFailure(String message);
     
+    
+    
 }

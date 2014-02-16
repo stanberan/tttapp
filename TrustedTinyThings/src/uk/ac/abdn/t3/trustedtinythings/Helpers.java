@@ -17,11 +17,12 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
 public class Helpers {
-
+static ProgressDialog mDialog;
 	public static DefaultHttpClient createHttpClient() { 
 		final int TIMEOUT=30;
 		final SchemeRegistry supportedSchemes = new SchemeRegistry();
@@ -100,6 +101,20 @@ public class Helpers {
 				// show it
 				alertDialog.show();
 			}
+	
+	
+	//used when loading data from server
+	public static void loading(boolean loading, Context context, String message){
+		 if(loading){
+			 mDialog = ProgressDialog.show(context,"Please wait...", message, true);
+		 }
+		 else{
+			 mDialog.dismiss();
+		 }
+		 
+		 
+	 }
+	 
 	
 	
 	
