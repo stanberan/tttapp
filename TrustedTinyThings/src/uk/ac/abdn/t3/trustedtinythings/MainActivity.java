@@ -3,8 +3,10 @@ package uk.ac.abdn.t3.trustedtinythings;
 
 
 import java.io.UnsupportedEncodingException;
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -36,6 +38,8 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
@@ -93,6 +97,8 @@ static String URL=null;
 
 static boolean accepted;    //not from nfc but list
 ArrayList<GenericRow> combinedView;
+private ProgressDialog mDialog;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -139,6 +145,7 @@ ArrayList<GenericRow> combinedView;
 			@Override
 			public void onClick(View v) {
 				String url="";
+				Helpers.loading(true,MainActivity.this,"Retrieving Company Profile...");
 				try {
 					url = "http://t3.abdn.ac.uk:8080/t3/1/thing/company/"+URLEncoder.encode(details.getText().toString(), "UTF-8");
 				} catch (UnsupportedEncodingException e) {
@@ -150,15 +157,16 @@ ArrayList<GenericRow> combinedView;
 				
 					@Override
 					public void onTaskComplete(String result) {
-						Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
-						showCompanyDialog(result,details.getText().toString());
 					
+				//removeddialogs		Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show(); 
+						showCompanyDialog(result,details.getText().toString());
+						Helpers.loading(false,MainActivity.this,null);
 					}
 
 					@Override
 					public void onFailure(String message) {
-						Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
-				
+						Toast.makeText(MainActivity.this, "Unable to retrieve company profile.\nPlease check your internet connection...", Toast.LENGTH_LONG).show();
+						Helpers.loading(false,MainActivity.this,null);
 						
 					}
 					
@@ -182,18 +190,20 @@ ArrayList<GenericRow> combinedView;
 			@Override
 			public void onClick(View v) {
 				String url="http://t3.abdn.ac.uk:8080/t3/1/user/remove/"+android_id+"/"+MD5;
-				
+				Helpers.loading(true,MainActivity.this,"Removing this device from your list of accepted devices...");
 				new GetTask(url, new RestTaskCallback(){
-
+						
 					@Override
 					public void onTaskComplete(String result) {
-						Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
+						//removeddialogs		Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
+						Helpers.loading(false,MainActivity.this,null);
 						finish();
 					}
 
 					@Override
 					public void onFailure(String message) {
 						Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+						Helpers.loading(false,MainActivity.this,null);
 						finish();
 						
 					}
@@ -253,7 +263,7 @@ ArrayList<GenericRow> combinedView;
 
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(MainActivity.this,"Exiting app and canceling forwarding to service",Toast.LENGTH_LONG).show();
+				//removeddialogs		Toast.makeText(MainActivity.this,"Exiting app and canceling forwarding to service",Toast.LENGTH_LONG).show();
 				new TrackStats().execute(new String[]{android_id,"User Declined Device:"+InformationHolder.holder.thingName+" with iotid:"+MD5});
 				finish();
 				
@@ -281,7 +291,7 @@ ArrayList<GenericRow> combinedView;
 		URL=extra.getString("URL");
 		MD5=extra.getString("MD5");
 		setHolder(response);
-		Toast.makeText(this, "Data to populate view set", Toast.LENGTH_LONG).show();
+		//removeddialogs		Toast.makeText(this, "Data to populate view set", Toast.LENGTH_LONG).show();
 		populateView(InformationHolder.holder);
 		}
 		
@@ -488,7 +498,7 @@ ArrayList<GenericRow> combinedView;
 	       
 	       if(row instanceof Capability){
 	    	   Capability cap=(Capability)row;
-	    	   Toast.makeText(getBaseContext(),cap.toString(),Toast.LENGTH_LONG).show();
+	    		//removeddialogs	   Toast.makeText(getBaseContext(),cap.toString(),Toast.LENGTH_LONG).show();
 	    	 
 	    	   Intent i=new Intent(MainActivity.this,CapabilityActivity.class);	
 	    	   i.putExtra("uk.ac.abdn.t3.trustedtinythings.capabilities",hol.capabilities);
@@ -500,7 +510,7 @@ ArrayList<GenericRow> combinedView;
 	    	   Quality q=(Quality)row;
 	    	   //TODO Quality enhancement title type 
 	    	   new TrackStats().execute(new String[]{android_id,"From Overview Screen clicked on Quality:"+q.description});
-	    	   Toast.makeText(getBaseContext(),"I am sorry.\nNo more information about this Quality.",Toast.LENGTH_LONG).show();
+	    	   Toast.makeText(getBaseContext(),"This Quality is being provided by Aberdeenshire Council.",Toast.LENGTH_LONG).show();
 	    	   
 	       }
 	       
@@ -541,7 +551,7 @@ ArrayList<GenericRow> combinedView;
 		if(response==null){
 		//	infoText.setText("This device was not recognized in our system.\nScan another tag.");
 				//TO DO -- REGISTER DEVICE BUTTON. - need deviceID and phoneID
-			Toast.makeText(this, response, Toast.LENGTH_LONG).show();
+			//removeddialogs		Toast.makeText(this, response, Toast.LENGTH_LONG).show();
 		}
 		else{
 		InformationHolder.holder =new InformationHolder();
@@ -619,6 +629,8 @@ public Capability[] getCapabilities(JSONArray capabilities){
     	
     	
     }
+
+ 
 
 
  
@@ -706,6 +718,11 @@ public Capability[] getCapabilities(JSONArray capabilities){
 			dev++;
 		}
 			catch(Exception e){
+				if(e instanceof UnknownHostException || e instanceof ConnectException){
+					added=true;
+				
+					return -2; //connection issue
+				}
 				e.printStackTrace();
 				//added=true;
     			//new AcceptResponse().execute(new  String[]{android_id,MD5,URL,"device"+dev});
@@ -713,10 +730,11 @@ public Capability[] getCapabilities(JSONArray capabilities){
 			}
 		
 			}
+			return -10 ; //should not happen
 	
 		}
 		
-	
+		else{
 		
 		try{
 			Uri.Builder b = Uri.parse("http://t3.abdn.ac.uk:8080").buildUpon().
@@ -742,22 +760,36 @@ public Capability[] getCapabilities(JSONArray capabilities){
 	}
 		catch(Exception e){
 			e.printStackTrace();
+			if(e instanceof UnknownHostException || e instanceof ConnectException){
+				
+			
+				return -2; //connection issue
+			}
 			return 2;
+		}
 		}
 		
 	}
 		public void onPostExecute(Integer response){
+			Helpers.loading(false, MainActivity.this,null);
 			if(response!=null){
 				if(response==6){
-					Toast.makeText(MainActivity.this, "Nick name generated and saved", Toast.LENGTH_LONG).show();
+					//removeddialogs	Toast.makeText(MainActivity.this, "Nick name generated and saved", Toast.LENGTH_LONG).show();
 				}
 				else if(response==2){
+					
 					setNickName(2);
 				}
 				else if (response==-1){
 					Toast.makeText(MainActivity.this, "Exception!", Toast.LENGTH_LONG).show();
 				}
-				
+				else if(response==-2){
+					
+					Toast.makeText(MainActivity.this, "Device not saved. Check your internet connection.", Toast.LENGTH_LONG).show();
+				}
+				else if (response ==-10){
+					Toast.makeText(MainActivity.this, "Should not happen", Toast.LENGTH_LONG).show();
+				}
 				
 				
 				
@@ -804,13 +836,13 @@ public Capability[] getCapabilities(JSONArray capabilities){
  }
  
  public void setNickName(int response){
-	
+	Helpers.loading(false, this, null);
 	String message="Please provide a nickname for this device, so you can reference it in the future. If canceled nickname will be provided automatically.";
 	if (response ==2){
 		message="This nick name already exist, please choose a new one.";
 	}
 	if (response ==3){
-		message="Cannot cannot be empty";
+		message="Cannot be empty";
 	}
 	
 	
@@ -823,15 +855,19 @@ public Capability[] getCapabilities(JSONArray capabilities){
 	    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 	        public void onClick(DialogInterface dialog, int whichButton) {
 	           String text=input.getText().toString();
+	           Helpers.loading(true,MainActivity.this,"Saving Device ...");
 	           if (text!=null && !text.equals("")){
 	            new CheckNickName().execute(new String[]{android_id,text});
 	           }
 	           else{
+	        	   Helpers.loading(false,MainActivity.this,null);
 	        	   setNickName(3);
+	        	   
 	           }
 	        }
 	    }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-	        public void onClick(DialogInterface dialog, int whichButton) {	          
+	        public void onClick(DialogInterface dialog, int whichButton) {
+	        	Helpers.loading(true,MainActivity.this,"Generating new nick name and saving device ...");
 	        	new CheckNickName().execute(new String[]{android_id,"generate"});
 	        	
 	        }

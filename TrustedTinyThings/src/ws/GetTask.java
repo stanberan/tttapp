@@ -30,6 +30,7 @@ public class GetTask extends AsyncTask<String, String, String>{
     @Override
     protected String doInBackground(String... params) {
         String response = null;
+       
       try{
         HttpClient httpclient= new DefaultHttpClient();
     	HttpGet httpget = new HttpGet(mRestUrl);
