@@ -54,7 +54,7 @@
       android:layout_height="50dp"
       android:background="@color/red"
       android:textSize="20sp"
-      android:layout_below="@id/who"
+      android:layout_below="@+id/what"
       android:textColor="@color/white"
       android:layout_gravity="center"
       android:gravity="center"
@@ -62,12 +62,12 @@
       
       
         <uk.ac.abdn.t3.trustedtinythings.StyledTextView
-        android:id="@+id/what"
+        android:id="@id/what"
         android:layout_width="60dp"
       android:layout_height="50dp"
       android:background="@color/green"
       android:textSize="18sp"
-      android:layout_below="@id/why"
+      android:layout_below="@id/who"
       android:textColor="@color/white"
       android:layout_gravity="center"
       android:gravity="center"

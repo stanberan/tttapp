@@ -286,6 +286,12 @@ private ProgressDialog mDialog;
 			delete.setVisibility(View.VISIBLE);
 			
 			}
+			else{
+				accepted=false;
+				accept.setVisibility(View.VISIBLE);
+				cancel.setVisibility(View.VISIBLE);
+				delete.setVisibility(View.GONE);
+			}
 		
 		android_id=extra.getString("android_id");
 		URL=extra.getString("URL");
@@ -534,7 +540,7 @@ private ProgressDialog mDialog;
 	    
 	    case R.id.info_bar:
 	    	Helpers.alertDialog("About",  getResources().getString(R.string.about), this);
-	    	 	
+	    	 	return true;
 	    case android.R.id.home:
 	        NavUtils.navigateUpFromSameTask(this);
 	        return true;
