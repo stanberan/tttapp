@@ -97,7 +97,7 @@ static String URL=null;
 
 static boolean accepted;    //not from nfc but list
 ArrayList<GenericRow> combinedView;
-private ProgressDialog mDialog;
+
 
 
 	@Override
