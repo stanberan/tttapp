@@ -75,7 +75,7 @@ public class NFCActivity extends FragmentActivity {
 		
 		
 		scan=(ScanATagFragment)getSupportFragmentManager().findFragmentById(R.id.scan_a_tag);
-		prefs= PreferenceManager.getDefaultSharedPreferences(this);
+		/*prefs= PreferenceManager.getDefaultSharedPreferences(this);
 		if(!prefs.getBoolean("EULA_ACCEPTED", false)) {
 		    showEula();
 		    // Determine if EULA was accepted this time
@@ -83,11 +83,11 @@ public class NFCActivity extends FragmentActivity {
 		}
 		else{
 			
-			
+			*/
 			
 		handleIntent(getIntent());
 		
-		}
+		//}
 	
 		
 		
@@ -253,6 +253,11 @@ private class DeviceExist extends AsyncTask<String, String, String> {
     @Override
     protected String doInBackground(String... params) {
     	publishProgress("Creating Http Client...");
+    	
+    	//wait for acceptance
+    	prefs= PreferenceManager.getDefaultSharedPreferences(NFCActivity.this);
+		while(!prefs.getBoolean("EULA_ACCEPTED", false)) {}
+    	
     	String urlRequest="http://t3.abdn.ac.uk:8080/t3/1/thing/"+params[0]+"/"+uid+"/information?busstop="+busStop;
     	HttpClient httpclient= Helpers.createHttpClient();
     	publishProgress("Http Client created...");
@@ -360,45 +365,7 @@ public  void alertDialog(String title, String message, Context c){
 			// show it
 			alertDialog.show();
 		}
- public void showEula(){
-		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-				this);
-String raw=getResources().getText(R.string.terms_conditions).toString();
-
-		final SpannableString s = 
-	               new SpannableString(raw);
-	  Linkify.addLinks(s, Linkify.WEB_URLS);
-		
-			// set title
-			alertDialogBuilder.setTitle("Terms & Conditions");
-
-			// set dialog message
-			alertDialogBuilder
-				.setMessage(s)
-				.setCancelable(false)
-				.setPositiveButton("I Agree to terms and conditions",new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,int id) {
-						  prefs.edit().putBoolean("EULA_ACCEPTED", true).commit();
-					}
-				  }).setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,int id) {
-							// if this button is clicked, just close
-							// the dialog box and do nothing
-							dialog.cancel();
-							finish();
-						}
-					})
-				;
-
-				// create alert dialog
-				AlertDialog alertDialog = alertDialogBuilder.create();
-				
-			
-				// show it
-				alertDialog.show();
-				((TextView)alertDialog.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
-			}
-	 
+ 
 	 
 	 
 	 

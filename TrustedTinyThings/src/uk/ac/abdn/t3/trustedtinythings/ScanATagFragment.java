@@ -12,11 +12,18 @@ import ws.GetResponseCallback;
 import ws.GetTask;
 import ws.RestTaskCallback;
 import ws.RestUtils;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,6 +42,7 @@ public class ScanATagFragment extends Fragment{
 	private static TextView progress_catalogue;
 	private static String uid;
 	private static boolean isNFC=false;
+	private SharedPreferences prefs;
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		final TelephonyManager tm = (TelephonyManager) getActivity().getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
@@ -85,25 +93,15 @@ String url="http://t3.abdn.ac.uk:8080/t3/1/thing/"+device.getId()+"/"+uid+"/info
 						}
 			        }).execute();
 					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
 				}
 				
 			});
-			
-			
+			prefs= PreferenceManager.getDefaultSharedPreferences(getActivity());
+			if(!prefs.getBoolean("EULA_ACCEPTED", false)) {
+			    showEula();
+			    // Determine if EULA was accepted this time
+			  
+			}
 			return result;
 	}
 	public void onActivityCreated(Bundle savedInstanceState) { 
@@ -165,5 +163,46 @@ String url="http://t3.abdn.ac.uk:8080/t3/1/thing/"+device.getId()+"/"+uid+"/info
 
 		
 	}
+	
+	
+	public void showEula(){
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+				getActivity());
+String raw=getResources().getText(R.string.terms_conditions).toString();
+
+		final SpannableString s = 
+	               new SpannableString(raw);
+	  Linkify.addLinks(s, Linkify.WEB_URLS);
+		
+			// set title
+			alertDialogBuilder.setTitle("Terms & Conditions");
+
+			// set dialog message
+			alertDialogBuilder
+				.setMessage(s)
+				.setCancelable(false)
+				.setPositiveButton("I Agree to terms and conditions",new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,int id) {
+						  prefs.edit().putBoolean("EULA_ACCEPTED", true).commit();
+					}
+				  }).setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,int id) {
+							// if this button is clicked, just close
+							// the dialog box and do nothing
+							dialog.cancel();
+							getActivity().finish();
+						}
+					})
+				;
+
+				// create alert dialog
+				AlertDialog alertDialog = alertDialogBuilder.create();
+				
+			
+				// show it
+				alertDialog.show();
+				((TextView)alertDialog.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+			}
+	 
 }
 
