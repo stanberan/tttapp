@@ -159,7 +159,7 @@ ArrayList<GenericRow> combinedView;
 					public void onTaskComplete(String result) {
 					
 				//removeddialogs		Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show(); 
-						showCompanyDialog(result,details.getText().toString());
+						Helpers.showCompanyDialog(result,details.getText().toString(),MainActivity.this);
 						Helpers.loading(false,MainActivity.this,null);
 					}
 
@@ -197,7 +197,11 @@ ArrayList<GenericRow> combinedView;
 					public void onTaskComplete(String result) {
 						//removeddialogs		Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
 						Helpers.loading(false,MainActivity.this,null);
+						Intent i=new Intent(MainActivity.this,NFCActivity.class);
+						
+						 startActivity(i);
 						finish();
+						
 					}
 
 					@Override
@@ -344,6 +348,8 @@ ArrayList<GenericRow> combinedView;
 		d.name=hol.manufacturer;
 		companies.add(c);
 		companies.add(d);
+		//GET Companies
+		
 		Company e=new Company();
 		e.name=hol.capabilities[0].consumer;
 		e.logo=hol.capabilities[0].consumerLogo;
@@ -668,6 +674,7 @@ public Capability[] getCapabilities(JSONArray capabilities){
 		return null;
 	}
 	protected void onPostExecute(Boolean b){
+		Helpers.loading(false, MainActivity.this, null);
 	if(b.booleanValue()){
 		 Toast.makeText(getApplicationContext(), "This IOT Device was succesfully added to your list of accepted devices" , Toast.LENGTH_LONG).show();
 		 Intent i= new Intent(Intent.ACTION_VIEW);
@@ -707,6 +714,7 @@ public Capability[] getCapabilities(JSONArray capabilities){
 				try{
 					  
 			    	HttpClient httpclient= new DefaultHttpClient();
+			    	
 			    	HttpGet httpget = new HttpGet(b.build().toString());
 			    	HttpResponse response;
 
@@ -777,7 +785,9 @@ public Capability[] getCapabilities(JSONArray capabilities){
 		
 	}
 		public void onPostExecute(Integer response){
+			if(response!=0){
 			Helpers.loading(false, MainActivity.this,null);
+			}
 			if(response!=null){
 				if(response==6){
 					//removeddialogs	Toast.makeText(MainActivity.this, "Nick name generated and saved", Toast.LENGTH_LONG).show();
@@ -885,34 +895,7 @@ public Capability[] getCapabilities(JSONArray capabilities){
 	 
  }
  
- public void showCompanyDialog(String result,String title){
-	 try{
-	 JSONObject res= new JSONObject(result);
-	 final Dialog dialog = new Dialog(this);
-		dialog.setContentView(R.layout.company_layout);
-		dialog.setTitle(title);
 
-
-		TextView address = (TextView) dialog.findViewById(R.id.address);
-		address.setText(res.getString("address"));
-		TextView email=(TextView)dialog.findViewById(R.id.email);
-		email.setText(res.getString("email"));
-		TextView url=(TextView)dialog.findViewById(R.id.url);
-		url.setText(res.getString("url"));
-		TextView phone=(TextView)dialog.findViewById(R.id.phone);
-		phone.setText(res.getString("telNumber"));
-		ImageView image = (ImageView) dialog.findViewById(R.id.image);
-		Picasso.with(MainActivity.this).load(res.getString("logo")).into(image);
-		
-	 dialog.show();
-	 }
-	 catch(Exception e){
-		 Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-	 }
-	 
-	 
-	 
- }
  
  
 

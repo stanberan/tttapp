@@ -1,5 +1,10 @@
 package uk.ac.abdn.t3.trustedtinythings;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -8,6 +13,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import ws.GenericListResponse;
 import ws.GetResponseCallback;
@@ -75,7 +81,7 @@ public class NFCActivity extends FragmentActivity {
 		
 		
 		scan=(ScanATagFragment)getSupportFragmentManager().findFragmentById(R.id.scan_a_tag);
-		/*prefs= PreferenceManager.getDefaultSharedPreferences(this);
+		/*prefs= PreferenceManager.getDefaultSharedPreferences(this); //MOVED
 		if(!prefs.getBoolean("EULA_ACCEPTED", false)) {
 		    showEula();
 		    // Determine if EULA was accepted this time
@@ -159,10 +165,13 @@ public class NFCActivity extends FragmentActivity {
 				
 				info = "URI" + urlAction+ "Size:"
 						+ ndefMessage.getRecords().length + "\nTYPE:" + type;
-				
+				Helpers.loading(true, this, "Retrieving device information and capabilities...");
 				new ServerResponse().execute(new String[]{MD5});
 				
 			}
+		}
+		else{
+			scan.setCatalogue();
 		}
 	}
 	
@@ -175,7 +184,7 @@ private class ServerResponse extends AsyncTask<String, String, String> {
 		
 		
 	
-	public boolean accepted(String deviceId){
+	public String accepted(String deviceId){
 		
 		
 		 String urlRequest="http://t3.abdn.ac.uk:8080/t3/1/user/accepted/"+uid+"/"+deviceId;
@@ -188,13 +197,23 @@ private class ServerResponse extends AsyncTask<String, String, String> {
 		HttpEntity entity= response.getEntity();
 		
 		if(response.getStatusLine().getStatusCode()==200){
-			return true;
+			String answer =EntityUtils.toString(entity);
+			JSONObject root=new JSONObject(answer);
+			String time=root.getString("accepted");
+			
+			return time;
+			
+			
+			
+			
 		}
 	}
 	catch(Exception e){
 		e.printStackTrace();
+		
 	}
-		return false;
+	Helpers.loading(false, NFCActivity.this, "Retrieving device data...");
+		return null;
 	}
 	
 	
@@ -203,42 +222,54 @@ private class ServerResponse extends AsyncTask<String, String, String> {
 		
 		
 		
-        @Override
-        protected String doInBackground(String... params) {
+       @Override
+       protected String doInBackground(String... params) {
+      
+       		String accepted=accepted(params[0]);
+       		if(accepted!=null){
+       			return accepted;
+       		}
+       		else{
+       			return null;
+       		}
+      
+       }
        
-        		boolean accepted=accepted(params[0]);
-        		if(accepted){
-        			return "1";
-        		}
-        		else{
-        			return null;
-        		}
-       
-        }
-        
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-        // infoText.setText(values[0]);
-        }
+       @Override
+       protected void onProgressUpdate(String... values) {
+           super.onProgressUpdate(values);
+       // infoText.setText(values[0]);
+       }
 
-        @Override
-        protected void onPostExecute(String result) {
-        	if(result!=null){
-        		Intent i = new Intent(Intent.ACTION_VIEW);
-        		i.setData(Uri.parse(urlAction));
-        		scan.setProgress(false);
-        		startActivity(i);
-        		Toast.makeText(getApplicationContext(), "This device is trusted by you! Redirecting...", Toast.LENGTH_LONG).show();
-        		//end our application
-        		
-        		finish();
-        	}
-        	else{
- 
-        		new DeviceExist().execute(new String[]{MD5});
-        		
-        	}
+       @Override
+       protected void onPostExecute(String result) {
+       	if(result!=null){
+       		Helpers.loading(false, NFCActivity.this, null);
+       		Intent i = new Intent(Intent.ACTION_VIEW);
+       		i.setData(Uri.parse(urlAction));
+       		scan.setProgress(false);
+       		startActivity(i);
+       		
+       		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+       	    try {
+					Date parsedDate = dateFormat.parse(result);
+					Calendar myCal = new GregorianCalendar();
+					myCal.setTime(parsedDate);
+					Toast.makeText(getApplicationContext(), "You trusted this device on "+parsedDate,Toast.LENGTH_LONG).show();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+       		
+       		
+       		//end our application
+       		//TODO TIME WHEN TRUSTED
+       		finish();
+       	}
+       	else{
+    		new DeviceExist().execute(new String[]{MD5});
+    		
+    	}
 }
 	}
 
@@ -300,6 +331,7 @@ private class DeviceExist extends AsyncTask<String, String, String> {
 
     @Override
     protected void onPostExecute(String result) {
+    	Helpers.loading(false, NFCActivity.this, null);
     	if(result!=null){
     		//Toast.makeText(NFCActivity.this, result, Toast.LENGTH_SHORT).show();
     Intent s=new Intent(NFCActivity.this, MainActivity.class);

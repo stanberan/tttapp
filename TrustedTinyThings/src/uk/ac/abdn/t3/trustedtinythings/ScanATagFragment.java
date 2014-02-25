@@ -63,6 +63,7 @@ public class ScanATagFragment extends Fragment{
 					Object o = catalogue.getItemAtPosition(position);
 					 final DeviceListHolder device=(DeviceListHolder)o;
 					
+					
 				//	Toast.makeText(getActivity(), device.getId(), Toast.LENGTH_SHORT).show();
 					//TODO     populate main activity view check for errors!!
 					
@@ -87,7 +88,7 @@ String url="http://t3.abdn.ac.uk:8080/t3/1/thing/"+device.getId()+"/"+uid+"/info
 
 						@Override
 						public void onFailure(String message) {
-							Helpers.loading(false,getActivity(),"Removing this device from your list of accepted devices...");
+							Helpers.loading(false,getActivity(),null);
 							Toast.makeText(getActivity(), "Could not retrieve device information!(Check your mobile data and network connection?)", Toast.LENGTH_LONG).show();
 							
 						}
@@ -96,6 +97,8 @@ String url="http://t3.abdn.ac.uk:8080/t3/1/thing/"+device.getId()+"/"+uid+"/info
 				}
 				
 			});
+			
+			catalogue.setAdapter(null);
 			prefs= PreferenceManager.getDefaultSharedPreferences(getActivity());
 			if(!prefs.getBoolean("EULA_ACCEPTED", false)) {
 			    showEula();
@@ -108,7 +111,7 @@ String url="http://t3.abdn.ac.uk:8080/t3/1/thing/"+device.getId()+"/"+uid+"/info
 	super.onActivityCreated(savedInstanceState);
 	
 	setHasOptionsMenu(true);
-	setCatalogue();
+	//setCatalogue();
 	}
 	
 	

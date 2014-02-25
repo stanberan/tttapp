@@ -15,11 +15,18 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.json.JSONObject;
+
+import com.squareup.picasso.Picasso;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class Helpers {
 static ProgressDialog mDialog;
@@ -116,7 +123,34 @@ static ProgressDialog mDialog;
 	 }
 	 
 	
-	
+	 public static void showCompanyDialog(String result,String title,Context c){
+		 try{
+		 JSONObject res= new JSONObject(result);
+		 final Dialog dialog = new Dialog(c);
+			dialog.setContentView(R.layout.company_layout);
+			dialog.setTitle(title);
+
+
+			TextView address = (TextView) dialog.findViewById(R.id.address);
+			address.setText(res.getString("address"));
+			TextView email=(TextView)dialog.findViewById(R.id.email);
+			email.setText(res.getString("email"));
+			TextView url=(TextView)dialog.findViewById(R.id.url);
+			url.setText(res.getString("url"));
+			TextView phone=(TextView)dialog.findViewById(R.id.phone);
+			phone.setText(res.getString("telNumber"));
+			ImageView image = (ImageView) dialog.findViewById(R.id.image);
+			Picasso.with(c).load(res.getString("logo")).into(image);
+			
+		 dialog.show();
+		 }
+		 catch(Exception e){
+			 Toast.makeText(c, e.getMessage(), Toast.LENGTH_LONG).show();
+		 }
+		 
+		 
+		 
+	 }
 	
 	
 	

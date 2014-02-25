@@ -76,7 +76,7 @@ public String getCapabilityType() {
 	@Override
 	public String getDescription() {
 		// TODO Get description from server
-		return "This device is collecting your data";
+		return "Data is collected from your mobile phone: "+consumes;
 	}
 	@Override
 	public String getLetter() {
