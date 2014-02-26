@@ -4,6 +4,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 
 import uk.ac.abdn.t3.trustedtinythings.Helpers;
@@ -33,6 +35,10 @@ public class GetTask extends AsyncTask<String, String, String>{
        
       try{
         HttpClient httpclient= new DefaultHttpClient();
+      HttpParams par=httpclient.getParams();
+        HttpConnectionParams.setConnectionTimeout(par, 6000);
+HttpConnectionParams.setSoTimeout(par, 6000);
+        
     	HttpGet httpget = new HttpGet(mRestUrl);
     	 HttpResponse responseHttp=httpclient.execute(httpget);
     	

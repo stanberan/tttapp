@@ -12,6 +12,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
@@ -190,6 +192,9 @@ private class ServerResponse extends AsyncTask<String, String, String> {
 		 String urlRequest="http://t3.abdn.ac.uk:8080/t3/1/user/accepted/"+uid+"/"+deviceId;
 		 Log.e("UID:",uid+"   dev:"+deviceId);
 		HttpClient httpclient= new DefaultHttpClient();
+		HttpParams par=httpclient.getParams();
+        HttpConnectionParams.setConnectionTimeout(par, 6000);
+HttpConnectionParams.setSoTimeout(par, 6000);
 	HttpGet httpget = new HttpGet(urlRequest);
 	HttpResponse response;
 	try{
@@ -210,9 +215,10 @@ private class ServerResponse extends AsyncTask<String, String, String> {
 	}
 	catch(Exception e){
 		e.printStackTrace();
+		Helpers.loading(false, NFCActivity.this, "Retrieving device data...");
 		
 	}
-	Helpers.loading(false, NFCActivity.this, "Retrieving device data...");
+
 		return null;
 	}
 	
@@ -244,10 +250,11 @@ private class ServerResponse extends AsyncTask<String, String, String> {
        @Override
        protected void onPostExecute(String result) {
        	if(result!=null){
-       		Helpers.loading(false, NFCActivity.this, null);
+       		
        		Intent i = new Intent(Intent.ACTION_VIEW);
        		i.setData(Uri.parse(urlAction));
        		scan.setProgress(false);
+       		Helpers.loading(false, NFCActivity.this, null);
        		startActivity(i);
        		
        		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
@@ -291,6 +298,12 @@ private class DeviceExist extends AsyncTask<String, String, String> {
     	
     	String urlRequest="http://t3.abdn.ac.uk:8080/t3/1/thing/"+params[0]+"/"+uid+"/information?busstop="+busStop;
     	HttpClient httpclient= Helpers.createHttpClient();
+    	
+    	HttpParams par=httpclient.getParams();
+        HttpConnectionParams.setConnectionTimeout(par, 6000);
+HttpConnectionParams.setSoTimeout(par, 6000);
+    	
+    	
     	publishProgress("Http Client created...");
     	HttpGet httpget = new HttpGet(urlRequest);
     	Log.d("busstop",""+ urlRequest);
@@ -331,7 +344,7 @@ private class DeviceExist extends AsyncTask<String, String, String> {
 
     @Override
     protected void onPostExecute(String result) {
-    	Helpers.loading(false, NFCActivity.this, null);
+    
     	if(result!=null){
     		//Toast.makeText(NFCActivity.this, result, Toast.LENGTH_SHORT).show();
     Intent s=new Intent(NFCActivity.this, MainActivity.class);
@@ -342,14 +355,16 @@ private class DeviceExist extends AsyncTask<String, String, String> {
     s.putExtra("URL",urlAction);
     s.putExtra("accept", false);    //used only for logic where the request of device is coming from (Accept vs. Delete)
     scan.setProgress(false);
+	Helpers.loading(false, NFCActivity.this, null);
     startActivity(s);
     finish();
     	}
   
     	else{
+    		Helpers.loading(false, NFCActivity.this, null);
     		scan.setProgress(false);
     		if(connected){
-    		alertDialog("WARNING!","I am sorry, but this device has not been registred with Trusted Tiny Things service.\n Would you like to proceed anyway?",NFCActivity.this);
+    		alertDialog("WARNING!","I am sorry, but this device has not been registered with Trusted Tiny Things service.\n Would you like to proceed anyway?",NFCActivity.this);
     	}
     		else{
     			Toast.makeText(NFCActivity.this, "Seems there is an issue with your internet connection.",Toast.LENGTH_LONG).show();
@@ -387,6 +402,7 @@ public  void alertDialog(String title, String message, Context c){
 					public void onClick(DialogInterface dialog,int id) {
 						// if this button is clicked, just close
 						// the dialog box and do nothing
+						scan.setCatalogue();
 						dialog.cancel();
 					}
 				})
