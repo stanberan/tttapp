@@ -24,6 +24,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -122,25 +123,42 @@ static ProgressDialog mDialog;
 		 
 	 }
 	 
-	
+
 	 public static void showCompanyDialog(String result,String title,Context c){
+		
+	
 		 try{
 		 JSONObject res= new JSONObject(result);
 		 final Dialog dialog = new Dialog(c);
 			dialog.setContentView(R.layout.company_layout);
 			dialog.setTitle(title);
-
+			dialog.setCanceledOnTouchOutside(true);
+			
 
 			TextView address = (TextView) dialog.findViewById(R.id.address);
+			
 			address.setText(res.getString("address"));
-			TextView email=(TextView)dialog.findViewById(R.id.email);
+			StyledTextView email=(StyledTextView)dialog.findViewById(R.id.company_email);
+			if(!res.getString("email").equals("null")){
 			email.setText(res.getString("email"));
-			TextView url=(TextView)dialog.findViewById(R.id.url);
+			email.setVisibility(View.VISIBLE);
+			dialog.findViewById(R.id.label_email).setVisibility(View.VISIBLE);
+			}
+			StyledTextView url=(StyledTextView)dialog.findViewById(R.id.company_website);
+			if(!res.getString("url").equals("null")){
 			url.setText(res.getString("url"));
-			TextView phone=(TextView)dialog.findViewById(R.id.phone);
+			url.setVisibility(View.VISIBLE);
+			dialog.findViewById(R.id.label_website).setVisibility(View.VISIBLE);
+			}
+			StyledTextView phone=(StyledTextView)dialog.findViewById(R.id.company_phone);
+			if(!res.getString("telNumber").equals("null")){
 			phone.setText(res.getString("telNumber"));
+			phone.setVisibility(View.VISIBLE);
+			dialog.findViewById(R.id.label_phone).setVisibility(View.VISIBLE);
+			}
 			ImageView image = (ImageView) dialog.findViewById(R.id.image);
 			Picasso.with(c).load(res.getString("logo")).into(image);
+	
 			
 		 dialog.show();
 		 }

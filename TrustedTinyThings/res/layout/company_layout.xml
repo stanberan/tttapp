@@ -1,44 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="300dp"
+
+ >
+
+<ScrollView
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
- 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="wrap_content"
+    
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+<LinearLayout 
+    android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="5dp" />
- 
-    <uk.ac.abdn.t3.trustedtinythings.StyledTextView
-        android:id="@+id/address"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-   
-        android:layout_toRightOf="@+id/image"/>
- 
-        <uk.ac.abdn.t3.trustedtinythings.StyledTextView
-        android:id="@+id/email"
-        android:autoLink="email"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-      
-        android:layout_below="@+id/address"/>
-     
-        <uk.ac.abdn.t3.trustedtinythings.StyledTextView
-        android:id="@+id/url"
-        android:layout_width="fill_parent"
-        android:autoLink="web"
-        android:layout_height="wrap_content"
-      
-        android:layout_below="@id/email"/>
-     
-       <uk.ac.abdn.t3.trustedtinythings.StyledTextView
-        android:id="@+id/phone"
-        android:layout_width="fill_parent"
-        android:autoLink="phone"
-        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        style="@style/nowCardStyle"
+        android:background="@drawable/search_bg_shadow"
+       
+         android:divider="@drawable/mydivider"
+        android:showDividers="middle"
+        android:dividerPadding="22dp">
         
-        android:layout_below="@id/url"/>
+         
+            <ImageView
+        	android:layout_weight="1"
+    android:id="@+id/image"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+                 
+           />
+    
+        
+        <uk.ac.abdn.t3.trustedtinythings.StyledTextView
+            android:layout_weight="1"
+                android:id="@+id/address"
+           
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+          android:gravity="center"
+          android:textColor="@color/black"
+        android:textSize="15sp"
+        android:text="asdf"
+           
+        />
+        </LinearLayout>
+   
+       <!-- Email -->
+       
+       <uk.ac.abdn.t3.trustedtinythings.StyledTextView
+       android:text="Email"
+       android:id="@+id/label_email"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+   android:visibility="gone"
+       android:gravity="center"
+       android:textStyle="bold"
+       />
+    
+     <uk.ac.abdn.t3.trustedtinythings.StyledTextView
+       android:background="@drawable/search_bg_shadow"
+       android:text=""
+            style="@style/nowCardStyle"
+       android:id="@+id/company_email"
+       android:autoLink="email"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:textStyle="bold"
+       android:gravity="center"
+       android:textColor="@color/black"
+         android:visibility="gone"
+       />
+       
+          <!-- URL -->
+       
+       <uk.ac.abdn.t3.trustedtinythings.StyledTextView
+       android:text="Link to Website"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+    android:id="@+id/label_website"
+       android:gravity="center"
+       android:textStyle="bold"
+         android:visibility="gone"
+       />
+    
+     <uk.ac.abdn.t3.trustedtinythings.StyledTextView
+       android:background="@drawable/search_bg_shadow"
+       android:text=""
+            style="@style/nowCardStyle"
+       android:id="@+id/company_website"
+       android:autoLink="web"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:textStyle="bold"
+       android:gravity="center"
+       android:textColor="@color/black"
+         android:visibility="gone"
+       />
+         <!-- PHONE -->
+       
+       <uk.ac.abdn.t3.trustedtinythings.StyledTextView
+       android:text="Contact Number"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+    android:id="@+id/label_phone"
+       android:gravity="center"
+       android:textStyle="bold"
+         
+       />
+    
+     <uk.ac.abdn.t3.trustedtinythings.StyledTextView
+       android:background="@drawable/search_bg_shadow"
+       android:text=""
+            style="@style/nowCardStyle"
+       android:id="@+id/company_phone"
+       android:autoLink="phone"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:textStyle="bold"
+       android:gravity="center"
+       android:textColor="@color/black"
+         android:visibility="gone"
+       /> 
+       
+       
      
-     
+</LinearLayout>
+</ScrollView>
 </RelativeLayout>
