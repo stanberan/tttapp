@@ -49,7 +49,11 @@ import android.widget.TextView;
 	                }
 	            }
 	            StyledTextView descriptionView=(StyledTextView)view.findViewById(R.id.row_description);
+	         
 	            descriptionView.setText(item.getDescription());
+	            if(item instanceof Quality){
+	            	descriptionView.setText(((Quality) item).getProvider());
+	            }
 	            StyledTextView titleView=(StyledTextView)view.findViewById(R.id.row_title);
 	            titleView.setText(item.getTitle());
 	         }
@@ -60,6 +64,7 @@ import android.widget.TextView;
 			public String getTitle();
 			public String getDescription();
 			public String getLetter();
+			public String getImage();
 		}
 		
 	}

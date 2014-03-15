@@ -7,7 +7,7 @@
     <string name="title_activity_nfc">Scan a Tag</string>
     <string name="accept">Accept </string>
     <string name="cancel">Cancel</string>
-    <string name="scan">Please place your device close to the <b>NFC tag</b>, alternatively please select from your already accepted devices below:</string>
+    <string name="scan">Please place your device close to the <b>NFC tag</b>, alternatively select from your collection of devices listed below.</string>
     <string name="terms_conditions">   
         
         The Trusted Tiny Things (T3) project is aiming at investigating how some of the challenges inherent in making the Internet of Things (IoT) more transparent and trustworthy to users. The event is conducted by members of the dot.rural Digital Economy Hub at the University of Aberdeen. The key contact for the T3 project is Dr Edoardo Pignotti (<b><a href="mailto:e.pignotti@abdn.ac.uk">e.pignotti@abdn.ac.uk</a></b>).
@@ -32,7 +32,7 @@
         </string>
     <string name="title_activity_capability">Capabilities</string>
     <string name="title_activity_device_details">Device Details</string>
-    <string name="title_activity_legend">Legend</string>
-    <string name="about">Trusted Tiny Things Application has been developed in Aberdeen University within dot.Rural for research purposes. \n\n This is a very first beta version to be tested with internal participants.
-	    			\n For more information please visit \n http://t3.abdn.ac.uk"</string>
+    <string name="title_activity_legend">Help</string>
+    <string name="about">Trusted Tiny Things has been developed as part of our project at dot.rural Digital Economy Hub at the University of Aberdeen. \n\n This is a beta version used as part of a research study involving a limited number of participants.
+	    			</string>
 </resources>

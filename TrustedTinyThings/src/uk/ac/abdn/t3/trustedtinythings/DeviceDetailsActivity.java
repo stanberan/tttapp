@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 public class DeviceDetailsActivity extends Activity {
@@ -23,6 +24,8 @@ StyledTextView thing_name;
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_device_details);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		deviceImage=(ImageView)findViewById(R.id.details_device_image_view);
 		device_description=(StyledTextView)findViewById(R.id.details_device_description);

@@ -9,6 +9,7 @@ import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -53,6 +54,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
@@ -66,7 +68,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
+
 @SuppressLint("NewApi")
 public class MainActivity extends Activity implements AnimationListener {
 TextView infoText;
@@ -105,6 +107,9 @@ ArrayList<GenericRow> combinedView;
 		super.onCreate(savedInstanceState);
 	
 		setContentView(R.layout.overview_frag);
+		
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		combinedView=new ArrayList<GenericRow>();
 		responseText=(TextView)findViewById(R.id.responseText);
@@ -189,35 +194,8 @@ ArrayList<GenericRow> combinedView;
 
 			@Override
 			public void onClick(View v) {
-				String url="http://t3.abdn.ac.uk:8080/t3/1/user/remove/"+android_id+"/"+MD5;
-				Helpers.loading(true,MainActivity.this,"Removing this device from your list of accepted devices...");
-				new GetTask(url, new RestTaskCallback(){
-						
-					@Override
-					public void onTaskComplete(String result) {
-						//removeddialogs		Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
-						Helpers.loading(false,MainActivity.this,null);
-						Intent i=new Intent(MainActivity.this,NFCActivity.class);
-						
-						 startActivity(i);
-						finish();
-						
-					}
-
-					@Override
-					public void onFailure(String message) {
-						Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
-						Helpers.loading(false,MainActivity.this,null);
-						finish();
-						
-					}
+				alertDialog("Remove","Are you sure you would like to remove this device from your collection?",MainActivity.this);
 					
-				}).execute();
-				
-				
-				
-				
-				
 				
 			}
 			
@@ -466,7 +444,11 @@ ArrayList<GenericRow> combinedView;
 		//INFLATE DATA
 		int pixels =(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 
                 5, getResources().getDisplayMetrics());
+		ArrayList<String> data=new ArrayList<String>();
+		
 		for(int i=0 ;i<hol.capabilities.length ;i++){
+			if(!data.contains(hol.capabilities[i].consumes)){
+				data.add(hol.capabilities[i].consumes);
 			ImageView im=new ImageView(this);
 			im.setId(i);
 			im.setOnClickListener(dataListener);
@@ -475,7 +457,7 @@ ArrayList<GenericRow> combinedView;
 			im.setLayoutParams(params);
 			im.setImageDrawable(getResources().getDrawable(R.drawable.data));
 			collectedData.addView(im);
-		
+			}
 		}
 		//INFLATE COMPANIES
 		
@@ -492,10 +474,55 @@ ArrayList<GenericRow> combinedView;
 		
 		}
 		
-		
+		final HashMap<String,HashMap<String,ArrayList<GenericRow>>> capabilityarrayholder=new HashMap<String,HashMap<String,ArrayList<GenericRow>>>();
+		//all capabilities
 		ArrayList<GenericRow> ada=new ArrayList<GenericRow>(Arrays.asList(hol.capabilities));
-		ArrayList<GenericRow> qual=new ArrayList<GenericRow>(Arrays.asList(hol.qualities));
-		combinedView.addAll(ada);
+		//all qualities
+		ArrayList<GenericRow> qual=new ArrayList<GenericRow>(Arrays.asList(hol.qualities));	
+		//sort capabilities into hashmaps of capability type->associated company
+		for(GenericRow row : ada){
+		
+			Capability cap=(Capability)row;
+			if(!capabilityarrayholder.containsKey(cap.name)){
+				capabilityarrayholder.put(cap.name,new HashMap<String,ArrayList<GenericRow>>());
+			}		
+			if(capabilityarrayholder.containsKey(cap.name)){
+				HashMap<String,ArrayList<GenericRow>> map=capabilityarrayholder.get(cap.name);
+			if(map.containsKey(cap.consumer)){
+				map.get(cap.consumer).add(cap);				
+			}
+			else{
+				map.put(cap.consumer, new ArrayList<GenericRow>());
+				map.get(cap.consumer).add(cap);
+			}	
+			}
+		
+			 
+		}
+	
+		ArrayList<GenericRow> capabilityView=new ArrayList<GenericRow>();
+		
+		for ( String key : capabilityarrayholder.keySet() ) {
+		    //for each capability
+			for(String comp : capabilityarrayholder.get(key).keySet()){
+				ArrayList<GenericRow> r=capabilityarrayholder.get(key).get(comp);				
+				GenericRowView capability= new GenericRowView();
+				capability.setTitle(key);
+				capability.setLetter("C");	
+				capability.setImage(((Capability)r.get(0)).consumerLogo);
+				
+				capability.setDescription(comp);
+				
+				capabilityView.add(capability);
+			}
+		}
+		
+		
+		
+		
+		
+		
+		combinedView.addAll(capabilityView);
 		combinedView.addAll(qual);
 		capabilityQualityList.setScrollContainer(false);
 		capabilityQualityList.setAdapter(new OverviewListAdapter(this,R.layout.capability_row,combinedView));
@@ -506,23 +533,29 @@ ArrayList<GenericRow> combinedView;
 
 	      Object o = capabilityQualityList.getItemAtPosition(position);
 	       GenericRow row=(GenericRow)o;//As you are using Default String Adapter
-	      // Toast.makeText(getBaseContext(),row.getTitle(),Toast.LENGTH_SHORT).show();
+	   
 	       
-	       if(row instanceof Capability){
-	    	   Capability cap=(Capability)row;
-	    		//removeddialogs	   Toast.makeText(getBaseContext(),cap.toString(),Toast.LENGTH_LONG).show();
+	       if(row instanceof GenericRowView){
+	    	   GenericRowView cap=(GenericRowView)row;
+	    	ArrayList<GenericRow> capies=capabilityarrayholder.get(cap.getTitle()).get(cap.getDescription());
+	    	Capability[] capabilities=new Capability[capies.size()];
+	    	for(int i=0;i <capabilities.length ; i++){
+	    		capabilities[i]=(Capability) capies.get(i);
+	    	}
+	    	
+	    	
 	    	 
 	    	   Intent i=new Intent(MainActivity.this,CapabilityActivity.class);	
-	    	   i.putExtra("uk.ac.abdn.t3.trustedtinythings.capabilities",hol.capabilities);
+	    	   i.putExtra("uk.ac.abdn.t3.trustedtinythings.capabilities",capabilities);
 	    	   startActivity(i);
-	    	   new TrackStats().execute(new String[]{android_id,"From Overview Screen clicked on Capability:"+cap.getName()});
+	    	   new TrackStats().execute(new String[]{android_id,"From Overview Screen clicked on Capability:"+cap.getTitle()});
 	    	   
 	       }
 	       else if(row instanceof Quality){
 	    	   Quality q=(Quality)row;
 	    	   //TODO Quality enhancement title type 
 	    	   new TrackStats().execute(new String[]{android_id,"From Overview Screen clicked on Quality:"+q.description});
-	    	   Toast.makeText(getBaseContext(),"This Quality is being provided by Aberdeenshire Council.",Toast.LENGTH_LONG).show();
+	    	   Toast.makeText(getBaseContext(),q.description,Toast.LENGTH_LONG).show();
 	    	   
 	       }
 	       
@@ -676,11 +709,12 @@ public Capability[] getCapabilities(JSONArray capabilities){
 	protected void onPostExecute(Boolean b){
 		Helpers.loading(false, MainActivity.this, null);
 	if(b.booleanValue()){
-		 Toast.makeText(getApplicationContext(), "This IOT Device was succesfully added to your list of accepted devices" , Toast.LENGTH_LONG).show();
+		 Toast.makeText(getApplicationContext(), "This device was succesfully added to your catalogue." , Toast.LENGTH_LONG).show();
 		 Intent i= new Intent(Intent.ACTION_VIEW);
 		 i.setData(Uri.parse(URL));
 		 startActivity(i);
 		 finish();
+		 
 	}
 		
 	}
@@ -804,7 +838,7 @@ public Capability[] getCapabilities(JSONArray capabilities){
 					Toast.makeText(MainActivity.this, "Device not saved. Check your internet connection.", Toast.LENGTH_LONG).show();
 				}
 				else if (response ==-10){
-					Toast.makeText(MainActivity.this, "Should not happen", Toast.LENGTH_LONG).show();
+					Toast.makeText(MainActivity.this, "Should not happen, please contact s.beran@abdn.ac.uk if you see this message.", Toast.LENGTH_LONG).show();
 				}
 				
 				
@@ -853,12 +887,14 @@ public Capability[] getCapabilities(JSONArray capabilities){
  
  public void setNickName(int response){
 	Helpers.loading(false, this, null);
-	String message="Please provide a nickname for this device, so you can reference it in the future. If canceled nickname will be provided automatically.";
+	String message="Please provide a nickname so you can refer to it in the future. If left empty the nickname will be provided automatically.";
 	if (response ==2){
-		message="This nick name already exist, please choose a new one.";
+		message="This nickname already exist, please choose a new one.";
 	}
 	if (response ==3){
-		message="Cannot be empty";
+       	Helpers.loading(true,MainActivity.this,"Generating new nickname and saving device ...");
+    	new CheckNickName().execute(new String[]{android_id,"generate"});
+    	return;
 	}
 	
 	
@@ -883,8 +919,7 @@ public Capability[] getCapabilities(JSONArray capabilities){
 	        }
 	    }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 	        public void onClick(DialogInterface dialog, int whichButton) {
-	        	Helpers.loading(true,MainActivity.this,"Generating new nick name and saving device ...");
-	        	new CheckNickName().execute(new String[]{android_id,"generate"});
+	        	dialog.dismiss();
 	        	
 	        }
 	    }).show();
@@ -895,7 +930,63 @@ public Capability[] getCapabilities(JSONArray capabilities){
 	 
  }
  
+ public  void alertDialog(String title, String message, Context c){
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+				c);
 
+			// set title
+			alertDialogBuilder.setTitle(title);
+
+			// set dialog message
+			alertDialogBuilder
+				.setMessage(message)
+				.setCancelable(true)
+				.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,int id) {
+						String url="http://t3.abdn.ac.uk:8080/t3/1/user/remove/"+android_id+"/"+MD5;
+						Helpers.loading(true,MainActivity.this,"Removing this device from your list of accepted devices...");
+						new GetTask(url, new RestTaskCallback(){
+								
+							@Override
+							public void onTaskComplete(String result) {
+								//removeddialogs		Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
+								Helpers.loading(false,MainActivity.this,null);
+								Intent i=new Intent(MainActivity.this,NFCActivity.class);
+								
+								 startActivity(i);
+								finish();
+								
+							}
+
+							@Override
+							public void onFailure(String message) {
+								Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+								Helpers.loading(false,MainActivity.this,null);
+								finish();
+								
+							}
+							
+						}).execute();
+						
+						
+					}
+				  }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+						
+					}
+					  
+				  })
+				;
+
+				// create alert dialog
+				AlertDialog alertDialog = alertDialogBuilder.create();
+
+				// show it
+				alertDialog.show();
+			}
  
  
 

@@ -42,6 +42,8 @@ public class ScanATagFragment extends Fragment{
 	private static TextView progress_catalogue;
 	private static String uid;
 	private static boolean isNFC=false;
+	public static boolean isRetrievingCat=false;
+	private boolean first=true;
 	private SharedPreferences prefs;
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -116,6 +118,7 @@ String url="http://t3.abdn.ac.uk:8080/t3/1/thing/"+device.getId()+"/"+uid+"/info
 	
 	
 	public void setCatalogue(){
+		isRetrievingCat=true;
 		Helpers.loading(true,getActivity(),"Retrieving your device catalogue list from server ...");
 		RestUtils utils =new RestUtils();
 		progress.setVisibility(View.VISIBLE);
@@ -137,6 +140,7 @@ String url="http://t3.abdn.ac.uk:8080/t3/1/thing/"+device.getId()+"/"+uid+"/info
 					progress_catalogue.setText("No accepted devices.");
 				}
 			}
+				isRetrievingCat=false;
 			}
 			@Override
 			public void onFailure(String message) {
@@ -147,6 +151,7 @@ String url="http://t3.abdn.ac.uk:8080/t3/1/thing/"+device.getId()+"/"+uid+"/info
 				}
 				progress_catalogue.setVisibility(View.VISIBLE);
 				progress_catalogue.setText(message);
+				isRetrievingCat=false;
 			}
 			
 		});

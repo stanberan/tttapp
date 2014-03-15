@@ -94,10 +94,9 @@ static ProgressDialog mDialog;
 			alertDialogBuilder
 				.setMessage(message)
 				.setCancelable(true)
-				.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+				.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog,int id) {
-						// if this button is clicked, close
-						// current activity
+						
 						
 					}
 				  })

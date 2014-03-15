@@ -30,6 +30,11 @@ public String getLetter() {
 	// TODO Auto-generated method stub
 	return "Q";
 }
+@Override
+public String getImage() {
+	// TODO Auto-generated method stub
+	return null;
+}
 
 	
 }

@@ -48,12 +48,7 @@ public class Capability implements OverviewListAdapter.GenericRow,Parcelable {
 	public void setConsumerLogo(String consumerLogo) {
 		this.consumerLogo = consumerLogo;
 	}
-public String getCapabilityType() {
-		return capabilityType;
-	}
-	public void setCapabilityType(String capabilityType) {
-		this.capabilityType = capabilityType;
-	}
+
 	//commit to remote
 	String consumer;
 	String consumerURL;
@@ -61,7 +56,6 @@ public String getCapabilityType() {
 	String purpose;
 	String name;
 	String consumerLogo;
-	String capabilityType;
 	@Override
 	public String toString() {
 		return "Capability [consumer=" + consumer + ", consumerURL="
@@ -97,7 +91,7 @@ public String getCapabilityType() {
 		dest.writeString(purpose);
 		dest.writeString(name);
 		dest.writeString(consumerLogo);
-		dest.writeString(capabilityType);
+	
 		
 	}
 	private void readFromParcel(Parcel in) {  
@@ -107,7 +101,7 @@ public String getCapabilityType() {
 		purpose=in.readString();
 		name=in.readString();
 		consumerLogo=in.readString();
-		capabilityType=in.readString();
+	
 	}
 	public static final Parcelable.Creator CREATOR =
 		    new Parcelable.Creator() {
@@ -119,6 +113,11 @@ public String getCapabilityType() {
 		            return new Capability[size];
 		        }
 		    };
+	@Override
+	public String getImage() {
+		// TODO Auto-generated method stub
+		return consumerLogo;
+	}
 	
 	
 }

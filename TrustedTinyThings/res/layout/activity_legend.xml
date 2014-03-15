@@ -13,19 +13,6 @@
     tools:context=".LegendActivity" >
 
 
- <uk.ac.abdn.t3.trustedtinythings.StyledTextView
-            android:layout_weight="1"
-               
-           
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-          android:gravity="center"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:text="Below are explanations of pictorial representations from the main screen"
-           
-        />
- 
  
  
  
@@ -59,7 +46,7 @@
         android:layout_height="wrap_content"
           android:gravity="center"
         android:textSize="15sp"
-        android:text="This logo is our flagship. Wherever you see this sign it means that device or a thing it is attached on is recognizable by our system "
+        android:text="This logo is our flagship. whenever you see this attached to a device it means that you can find out about its capabilities using our app."
            
         />
     </LinearLayout>
@@ -99,7 +86,7 @@
         android:layout_height="wrap_content"
           android:gravity="center"
         android:textSize="15sp"
-        android:text="This icon is a representation of yourself - user of this device"
+        android:text="This icon is a representation of yourself : user of this device."
            
         />
     </LinearLayout>
@@ -135,7 +122,7 @@
         android:layout_height="wrap_content"
           android:gravity="center"
         android:textSize="15sp"
-        android:text="This icon represents companies that are associated with this device, such as service providers, manufacturers,owners and any other external organizations."
+        android:text="This icon represents organisations that are associated with this device, such as service providers, manufacturers, owners and any other third-party organisations."
            
         />
     </LinearLayout>
@@ -169,7 +156,7 @@
         android:layout_height="wrap_content"
           android:gravity="center"
         android:textSize="15sp"
-        android:text="This icon represents what data are being collected about you IF you accept to use this device."
+        android:text="This icon represents what data is being collected about you IF you accept to use this device."
            
         />
     </LinearLayout>

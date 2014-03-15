@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -47,6 +48,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.Menu;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -77,6 +79,8 @@ public class NFCActivity extends FragmentActivity {
 	
 	
 		setContentView(R.layout.scan_activity);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 		final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
 		 uid=tm.getDeviceId();	 
 		
@@ -108,11 +112,7 @@ public class NFCActivity extends FragmentActivity {
 		return true;
 	}
 
-	public void onResume() {
-		
-		super.onResume();
-		
-	}
+	
 
 	@SuppressLint("NewApi")
 	public void handleIntent(Intent i) {
@@ -167,7 +167,7 @@ public class NFCActivity extends FragmentActivity {
 				
 				info = "URI" + urlAction+ "Size:"
 						+ ndefMessage.getRecords().length + "\nTYPE:" + type;
-				Helpers.loading(true, this, "Retrieving device information and capabilities...");
+				Helpers.loading(true, this, "Retrieving device information...");
 				new ServerResponse().execute(new String[]{MD5});
 				
 			}
@@ -191,7 +191,7 @@ private class ServerResponse extends AsyncTask<String, String, String> {
 		
 		 String urlRequest="http://t3.abdn.ac.uk:8080/t3/1/user/accepted/"+uid+"/"+deviceId;
 		 Log.e("UID:",uid+"   dev:"+deviceId);
-		HttpClient httpclient= new DefaultHttpClient();
+		HttpClient httpclient= Helpers.createHttpClient();
 		HttpParams par=httpclient.getParams();
         HttpConnectionParams.setConnectionTimeout(par, 6000);
 HttpConnectionParams.setSoTimeout(par, 6000);
@@ -200,12 +200,11 @@ HttpConnectionParams.setSoTimeout(par, 6000);
 	try{
 		response =httpclient.execute(httpget);
 		HttpEntity entity= response.getEntity();
-		
+	//	Log.e("Debug Accepted Request","Status:"+response.getStatusLine().getStatusCode()+" Content Body:"+EntityUtils.toString(entity));
 		if(response.getStatusLine().getStatusCode()==200){
 			String answer =EntityUtils.toString(entity);
 			JSONObject root=new JSONObject(answer);
 			String time=root.getString("accepted");
-			
 			return time;
 			
 			
@@ -260,9 +259,10 @@ HttpConnectionParams.setSoTimeout(par, 6000);
        		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
        	    try {
 					Date parsedDate = dateFormat.parse(result);
+					
 					Calendar myCal = new GregorianCalendar();
 					myCal.setTime(parsedDate);
-					Toast.makeText(getApplicationContext(), "You trusted this device on "+parsedDate,Toast.LENGTH_LONG).show();
+					Toast.makeText(getApplicationContext(), "You trusted this device on "+myCal.getDisplayName(Calendar.DATE, Calendar.LONG, Locale.UK)+ " "+myCal.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.UK)+" "+myCal.getDisplayName(Calendar.YEAR, Calendar.LONG, Locale.UK)+" at "+myCal.getDisplayName(Calendar.HOUR, Calendar.SHORT, Locale.UK)+""+myCal.getDisplayName(Calendar.AM_PM, Calendar.LONG, Locale.UK),Toast.LENGTH_LONG).show();
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
