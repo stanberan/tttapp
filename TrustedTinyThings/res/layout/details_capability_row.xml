@@ -5,49 +5,7 @@
     android:background="@drawable/search_bg_shadow"
     android:layout_margin="15dp"
    >
-    
-    
-    <uk.ac.abdn.t3.trustedtinythings.StyledTextView
-        android:id="@+id/who"
-      android:layout_width="60dp"
-      android:layout_height="50dp"
-      android:background="@color/blue"
-      android:textSize="20sp"
-      android:textColor="@color/white"
-     
-      android:gravity="center"
-      android:text="Who?"/>
-    
-    <LinearLayout android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/who"
-        android:layout_alignBottom="@id/who"
-        android:layout_toRightOf="@id/who"
-        android:orientation="horizontal"
-        android:id="@+id/who_stuff">
         
-        <uk.ac.abdn.t3.trustedtinythings.StyledTextView
-                android:id="@+id/who_name"
-                android:layout_weight="2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-          android:gravity="center_vertical"
-          android:layout_gravity="center_vertical"
-        android:textSize="15sp"
-         android:layout_marginLeft="5dp"
-        
-        android:text="Region Services Limited"
-        />
-    
-     <ImageView
-         android:layout_weight="2"
-          android:id="@+id/who_image"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-       
-           />
-    </LinearLayout>
-    
       <uk.ac.abdn.t3.trustedtinythings.StyledTextView
         android:id="@+id/why"
        android:layout_width="60dp"
@@ -67,7 +25,7 @@
       android:layout_height="50dp"
       android:background="@color/green"
       android:textSize="18sp"
-      android:layout_below="@id/who"
+   
       android:textColor="@color/white"
       android:layout_gravity="center"
       android:gravity="center"

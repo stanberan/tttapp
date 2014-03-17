@@ -5,6 +5,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.squareup.picasso.Picasso;
+
 import ws.DeviceListHolder;
 import ws.GetTask;
 import ws.RestTaskCallback;
@@ -22,16 +24,22 @@ import android.view.WindowManager;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
 public class CapabilityActivity extends Activity {
 ListView listView=null;
+LinearLayout who=null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_capability);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		who=(LinearLayout) findViewById(R.id.who_stuff);
+		
+		
 		
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		listView=(ListView)findViewById(R.id.details_list);
@@ -42,6 +50,14 @@ ListView listView=null;
 		for(int i=0; i<parcels.length;i++){
 			capabilities.add((Capability)parcels[i]);
 		}
+		
+		final StyledTextView who_name=(StyledTextView)findViewById(R.id.who_name);
+		ImageView img=(ImageView)findViewById(R.id.who_image);
+		who_name.setText(capabilities.get(0).getConsumer());
+		Picasso.with(this).load(capabilities.get(0).getConsumerLogo()).into(img);;
+		
+		
+		
 		
 		
 		DetailsAdapter adapter = new DetailsAdapter(this,
@@ -91,6 +107,48 @@ ListView listView=null;
 				
 				
 			});
+		    
+		    
+		    
+		    who.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					String url="";
+					Helpers.loading(true,CapabilityActivity.this,"Retrieving Company Profile...");
+					try {
+						url = "http://t3.abdn.ac.uk:8080/t3/1/thing/company/"+URLEncoder.encode(who_name.getText().toString(), "UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					new GetTask(url, new RestTaskCallback(){
+					
+						@Override
+						public void onTaskComplete(String result) {
+						
+					//removeddialogs		Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show(); 
+							Helpers.showCompanyDialog(result,who_name.getText().toString(),CapabilityActivity.this);
+							Helpers.loading(false,CapabilityActivity.this,null);
+						}
+
+						@Override
+						public void onFailure(String message) {
+							Toast.makeText(CapabilityActivity.this, "Unable to retrieve company profile.\nPlease check your internet connection...", Toast.LENGTH_LONG).show();
+							Helpers.loading(false,CapabilityActivity.this,null);
+							
+						}
+						
+					}).execute();
+					
+					
+				}
+				
+			});
+		    
+		    
+		    
+		    
 	}
 
 	@Override

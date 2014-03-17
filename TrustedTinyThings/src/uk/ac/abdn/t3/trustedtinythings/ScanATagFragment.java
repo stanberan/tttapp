@@ -30,6 +30,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -62,6 +63,11 @@ public class ScanATagFragment extends Fragment{
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
 		                int position, long id) {
+					if(catalogue.getAdapter().isEmpty()){
+						setCatalogue();
+						catalogue.invalidate();
+						return;
+					}
 					Object o = catalogue.getItemAtPosition(position);
 					 final DeviceListHolder device=(DeviceListHolder)o;
 					
@@ -101,12 +107,12 @@ String url="http://t3.abdn.ac.uk:8080/t3/1/thing/"+device.getId()+"/"+uid+"/info
 			});
 			
 			catalogue.setAdapter(null);
-			prefs= PreferenceManager.getDefaultSharedPreferences(getActivity());
+			/*prefs= PreferenceManager.getDefaultSharedPreferences(getActivity());
 			if(!prefs.getBoolean("EULA_ACCEPTED", false)) {
-			    showEula();
+			    Helpers.showEula(getActivity());
 			    // Determine if EULA was accepted this time
 			  
-			}
+			}*/
 			return result;
 	}
 	public void onActivityCreated(Bundle savedInstanceState) { 
@@ -137,7 +143,8 @@ String url="http://t3.abdn.ac.uk:8080/t3/1/thing/"+device.getId()+"/"+uid+"/info
 				if(response.size()==0){
 					progress_catalogue.setVisibility(View.VISIBLE);
 				
-					progress_catalogue.setText("No accepted devices.");
+					progress_catalogue.setText("No devices in your collection.");
+					
 				}
 			}
 				isRetrievingCat=false;
@@ -145,7 +152,7 @@ String url="http://t3.abdn.ac.uk:8080/t3/1/thing/"+device.getId()+"/"+uid+"/info
 			@Override
 			public void onFailure(String message) {
 			Helpers.loading(false,getActivity(),null);
-			Toast.makeText(getActivity(), "Could not retrieve your device list.\n Check your internet connection", Toast.LENGTH_LONG).show();
+			Toast.makeText(getActivity(), "Could not retrieve your device collection.\n Check your internet connection", Toast.LENGTH_LONG).show();
 				if(!isNFC){
 				progress.setVisibility(View.GONE);
 				}

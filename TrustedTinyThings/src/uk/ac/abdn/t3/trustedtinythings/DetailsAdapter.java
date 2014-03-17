@@ -39,13 +39,13 @@ import android.widget.TextView;
 	        Capability item = getItem(position);
 	        if (item!= null) {
 	            // My layout has only one TextView
-	          StyledTextView who_name=(StyledTextView)view.findViewById(R.id.who_name);
-	          ImageView who_image=(ImageView)view.findViewById(R.id.who_image);
+	          //StyledTextView who_name=(StyledTextView)view.findViewById(R.id.who_name);
+	        //  ImageView who_image=(ImageView)view.findViewById(R.id.who_image);
 	          StyledTextView why=(StyledTextView)view.findViewById(R.id.why_name);
 	          StyledTextView what=(StyledTextView)view.findViewById(R.id.what_name);
 	          
-	          who_name.setText(item.getConsumer());
-	          Picasso.with(context).load(item.getConsumerLogo()).into(who_image);
+	       //   who_name.setText(item.getConsumer());
+	      //    Picasso.with(context).load(item.getConsumerLogo()).into(who_image);
 	          why.setText(item.getPurpose());
 	          what.setText(item.getConsumes());
 	        }

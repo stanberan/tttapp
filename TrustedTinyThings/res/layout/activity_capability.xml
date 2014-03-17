@@ -58,12 +58,55 @@
      
 
 </RelativeLayout>
-    
-    
+
+          
+<LinearLayout 
+    android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/top_desc"
+        android:id="@+id/who_stuff"
+        android:background="@drawable/search_bg_shadow"
+        android:dividerPadding="22dp">
+        
+         <uk.ac.abdn.t3.trustedtinythings.StyledTextView
+        android:id="@+id/who"    
+       android:layout_width="60dp"
+      android:layout_height="50dp"
+      android:background="@color/blue"
+      android:textSize="20sp"
+      android:textColor="@color/white"
+      android:gravity="center"
+      android:layout_gravity="center"
+      android:text="Who?"/>
+            
+        <uk.ac.abdn.t3.trustedtinythings.StyledTextView
+            android:layout_weight="1"
+                android:id="@+id/who_name"
+           
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+          android:gravity="center"
+          android:layout_gravity="center"
+          android:textColor="@color/black"
+        android:textSize="15sp"
+        android:text="Unknown"
+           
+        />
+            <ImageView
+        	android:layout_weight="1"
+    android:id="@+id/who_image"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+                 
+           />
+            
+        </LinearLayout>
 
   <ListView
       android:id="@+id/details_list"
-      android:layout_below="@id/top_desc"
+      android:layout_below="@id/who_stuff"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
        android:cacheColorHint="@color/gray"

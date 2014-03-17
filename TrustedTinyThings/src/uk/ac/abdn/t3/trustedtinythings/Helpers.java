@@ -19,11 +19,17 @@ import org.json.JSONObject;
 
 import com.squareup.picasso.Picasso;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -116,7 +122,9 @@ static ProgressDialog mDialog;
 			 mDialog = ProgressDialog.show(context,"Please wait...", message, true);
 		 }
 		 else{
+			 if(mDialog!=null){
 			 mDialog.dismiss();
+			 }
 		 }
 		 
 		 
@@ -168,6 +176,48 @@ static ProgressDialog mDialog;
 		 
 		 
 	 }
+	 public static void showEula(final Context c){
+		 
+		 
+		final SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(c);
+		 
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+					c);
+	String raw=c.getResources().getText(R.string.terms_conditions).toString();
+
+			final SpannableString s = 
+		               new SpannableString(raw);
+		  Linkify.addLinks(s, Linkify.WEB_URLS);
+			
+				// set title
+				alertDialogBuilder.setTitle("Terms & Conditions");
+
+				// set dialog message
+				alertDialogBuilder
+					.setMessage(s)
+					.setCancelable(false)
+					.setPositiveButton("I Agree to terms and conditions",new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,int id) {
+							  prefs.edit().putBoolean("EULA_ACCEPTED", true).commit();
+						}
+					  }).setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,int id) {
+								// if this button is clicked, just close
+								// the dialog box and do nothing
+								dialog.cancel();
+								((Activity)c).finish();
+							}
+						})
+					;
+
+					// create alert dialog
+					AlertDialog alertDialog = alertDialogBuilder.create();
+					
+				
+					// show it
+					alertDialog.show();
+					((TextView)alertDialog.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+				}
 	
 	
 	

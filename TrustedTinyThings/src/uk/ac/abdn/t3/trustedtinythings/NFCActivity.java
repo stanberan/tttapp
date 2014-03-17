@@ -1,5 +1,6 @@
 package uk.ac.abdn.t3.trustedtinythings;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -30,6 +31,7 @@ import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -118,6 +120,13 @@ public class NFCActivity extends FragmentActivity {
 	public void handleIntent(Intent i) {
 	
 		
+		
+		prefs= PreferenceManager.getDefaultSharedPreferences(NFCActivity.this);
+		if(!prefs.getBoolean("EULA_ACCEPTED", false)){
+			Helpers.showEula(this);
+		}
+		
+		
 		String action = i.getAction();
 		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
 			scan.setProgress(true);
@@ -167,7 +176,9 @@ public class NFCActivity extends FragmentActivity {
 				
 				info = "URI" + urlAction+ "Size:"
 						+ ndefMessage.getRecords().length + "\nTYPE:" + type;
-				Helpers.loading(true, this, "Retrieving device information...");
+				if(prefs.getBoolean("EULA_ACCEPTED", false)){
+				Helpers.loading(true, NFCActivity.this, "Retrieving device data...");
+				}
 				new ServerResponse().execute(new String[]{MD5});
 				
 			}
@@ -188,7 +199,7 @@ private class ServerResponse extends AsyncTask<String, String, String> {
 	
 	public String accepted(String deviceId){
 		
-		
+	
 		 String urlRequest="http://t3.abdn.ac.uk:8080/t3/1/user/accepted/"+uid+"/"+deviceId;
 		 Log.e("UID:",uid+"   dev:"+deviceId);
 		HttpClient httpclient= Helpers.createHttpClient();
@@ -229,7 +240,8 @@ HttpConnectionParams.setSoTimeout(par, 6000);
 		
        @Override
        protected String doInBackground(String... params) {
-      
+    	Looper.prepare();
+    	   while(!prefs.getBoolean("EULA_ACCEPTED", false)) {}    	 
        		String accepted=accepted(params[0]);
        		if(accepted!=null){
        			return accepted;
@@ -257,12 +269,15 @@ HttpConnectionParams.setSoTimeout(par, 6000);
        		startActivity(i);
        		
        		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+       		
        	    try {
-					Date parsedDate = dateFormat.parse(result);
-					
+       	    	Date parsedDate=dateFormat.parse(result);
+				SimpleDateFormat time=new SimpleDateFormat("hh:mm a");
+				SimpleDateFormat date=new SimpleDateFormat("dd-MMM-yyyy");
+				
 					Calendar myCal = new GregorianCalendar();
 					myCal.setTime(parsedDate);
-					Toast.makeText(getApplicationContext(), "You trusted this device on "+myCal.getDisplayName(Calendar.DATE, Calendar.LONG, Locale.UK)+ " "+myCal.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.UK)+" "+myCal.getDisplayName(Calendar.YEAR, Calendar.LONG, Locale.UK)+" at "+myCal.getDisplayName(Calendar.HOUR, Calendar.SHORT, Locale.UK)+""+myCal.getDisplayName(Calendar.AM_PM, Calendar.LONG, Locale.UK),Toast.LENGTH_LONG).show();
+					Toast.makeText(getApplicationContext(), "You trusted this device on "+date.format(parsedDate)+" at "+time.format(parsedDate),Toast.LENGTH_LONG).show();
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -270,7 +285,7 @@ HttpConnectionParams.setSoTimeout(par, 6000);
        		
        		
        		//end our application
-       		//TODO TIME WHEN TRUSTED
+       	
        		finish();
        	}
        	else{
@@ -293,8 +308,7 @@ private class DeviceExist extends AsyncTask<String, String, String> {
     	publishProgress("Creating Http Client...");
     	
     	//wait for acceptance
-    	prefs= PreferenceManager.getDefaultSharedPreferences(NFCActivity.this);
-		while(!prefs.getBoolean("EULA_ACCEPTED", false)) {}
+    	
     	
     	String urlRequest="http://t3.abdn.ac.uk:8080/t3/1/thing/"+params[0]+"/"+uid+"/information?busstop="+busStop;
     	HttpClient httpclient= Helpers.createHttpClient();
