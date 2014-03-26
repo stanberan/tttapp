@@ -6,7 +6,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_nfc">Scan a Tag</string>
     <string name="accept">Accept </string>
-    <string name="cancel">Cancel</string>
+    <string name="decline">Decline</string>
     <string name="scan">Please place your device close to the <b>NFC tag</b>, alternatively select from your collection of devices listed below.</string>
     <string name="terms_conditions">   
         

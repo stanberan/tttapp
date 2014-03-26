@@ -35,6 +35,7 @@ import android.widget.TextView;
 
 	        GenericRow item = getItem(position);
 	        if (item!= null) {
+	        
 	            // My layout has only one TextView
 	            StyledTextView letterView = (StyledTextView) view.findViewById(R.id.capital_letter_view);
 	            if (letterView != null) {

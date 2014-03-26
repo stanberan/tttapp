@@ -11,7 +11,7 @@
                 android:layout_weight="1"
                 android:layout_height="match_parent"    
     			android:layout_margin="5dp"
-                android:text="@string/cancel"
+                android:text="@string/decline"
                 android:background="@color/red"
                 android:textColor="@color/Ivory"
                 android:textSize="20sp" />
